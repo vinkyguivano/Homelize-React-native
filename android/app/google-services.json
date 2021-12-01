@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "786926213150",
+    "project_id": "homelize-333512",
+    "storage_bucket": "homelize-333512.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:786926213150:android:f051aa40ea71e31480760f",
+        "android_client_info": {
+          "package_name": "com.homelizefe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "786926213150-dmspi7jgsgpt6g3mm3ahhtdr5av19h48.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.homelizefe",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "786926213150-jc9vhgr8o97sth41fbvii1ttdoo9k31k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBffA1ULte6il_6V5ZwIdY8zqkH2t-X-p8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "786926213150-jc9vhgr8o97sth41fbvii1ttdoo9k31k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
