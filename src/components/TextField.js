@@ -1,12 +1,11 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import {
-  TextField,
-  FilledTextField,
   OutlinedTextField,
 } from 'react-native-material-textfield';
 import color from '../utils/color';
 import font from '../utils/font';
+import { EyeClose, EyeOpen } from '../assets/icons';
 
 const TextInput = (props) => {
   let inputRef;
@@ -20,8 +19,10 @@ const TextInput = (props) => {
     }
   }
 
+  let { password, onClickEye, passwordVisible } = props;
+
   return (
-    <View style={{marginTop: 23}}>
+    <View style={{marginTop: Dimensions.get('window').height * 0.035}}>
       <OutlinedTextField
         {...props}
         ref = {getRefHandler()}
@@ -31,6 +32,14 @@ const TextInput = (props) => {
         fontSize={14}
         tintColor={color.primary}
         baseColor={color.black}
+        renderRightAccessory = { () => {
+          if(password)
+            return (
+              <TouchableOpacity onPress={onClickEye}>
+                <Image source={ !passwordVisible ?  EyeClose : EyeOpen } style={{width: 20, height: 20}}/>
+              </TouchableOpacity>
+            )
+        }}
       />
     </View>
   )
