@@ -11,7 +11,8 @@ import {
 } from 'react-native-google-signin'
 
 import { Facebook, Google, PrimaryButton, TextInput } from '../../components';
-import { color, font, storage, api } from '../../utils';
+import AuthContext from '../../context/AuthContext';
+import { color, font, api } from '../../utils';
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -23,6 +24,7 @@ const Login = ({ navigation }) => {
     password: ''
   })
   const [errorMsg, setErrorMsg] = useState('')
+  const { signIn } = React.useContext(AuthContext)
   let emailRef, passwordRef;
 
   useEffect(() => {
@@ -98,9 +100,7 @@ const Login = ({ navigation }) => {
     try {
       let res = await api.post('login', null, body)
       res= res.data;
-      console.log(res)
-      await storage.storeData('client_data', res);
-      navigation.replace('App')
+      await signIn(res)
     } catch (error) {
       let err = error?.response?.data
       if(err?.message === "Bad credentials"){
@@ -127,8 +127,7 @@ const Login = ({ navigation }) => {
       let res = await api.post('login/google', null, data);
       res = res.data;
       console.log(res);
-      await storage.storeData('client_data', res);
-      navigation.replace('App')
+      await signIn(res)
 
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -165,8 +164,7 @@ const Login = ({ navigation }) => {
         try {
           let res2 = await api.post('login/facebook', null, body)
           res2 = res2.data
-          await storage.storeData('client_data', res2)
-          navigation.replace('App')
+          await signIn(res2)
         } catch (e) {
           console.log(e);
         }

@@ -1,27 +1,14 @@
 import React, { useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { color, storage } from '../../utils'
+import { color } from '../../utils'
 
 const Splash = ({ navigation }) => {
 
-  const checkAuth = async () => {
-    try {
-      const res = await storage.getData("client_data");
-      if(res?.token && res?.user){
-        navigation.replace('App');
-      }else{
-        navigation.replace('Auth');
-      }
-    } catch (error){
-      console.log(error)
-    }
-  }
-
-  useEffect(() => {
-    setTimeout(() => {
-      checkAuth()
-    }, 2000)
-  }, [])
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     checkAuth()
+  //   }, 2000)
+  // }, [])
 
   return (
     <View style={styles.container}>

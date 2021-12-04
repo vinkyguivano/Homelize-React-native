@@ -11,7 +11,8 @@ import {
 } from 'react-native-google-signin'
 
 import { Facebook, Google, PrimaryButton, TextInput } from '../../components';
-import { storage, font, color, api } from '../../utils';
+import AuthContext from '../../context/AuthContext';
+import { font, color, api } from '../../utils';
 
 const Register = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -26,7 +27,7 @@ const Register = ({ navigation }) => {
   })
   const [errorMessage, setErrorMessage] = useState('')
   let nameRef, emailRef, passwordRef;
-
+  const { signIn } = React.useContext(AuthContext)
   useEffect(() => {
     GoogleSignin.configure({
       webClientId: "786926213150-jc9vhgr8o97sth41fbvii1ttdoo9k31k.apps.googleusercontent.com"
@@ -120,8 +121,7 @@ const Register = ({ navigation }) => {
     try {
       let res = await api.post('register', null, body);
       res = res.data;
-      await storage.storeData('client_data', res);
-      navigation.replace('App')
+      await signIn(res)
     }
     catch (error) {
       let err = error?.response?.data;
@@ -148,9 +148,7 @@ const Register = ({ navigation }) => {
 
       let res = await api.post('login/google',null, data);
       res = res.data;
-
-      await storage.storeData('client_data', res);
-      navigation.replace('App')
+      await signIn(res)
 
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -187,8 +185,7 @@ const Register = ({ navigation }) => {
         try {
           let res2 = await api.post('login/facebook', null, body)
           res2 = res2.data
-          await storage.storeData('client_data', res2)
-          navigation.replace('App')
+          await signIn(res2)
         } catch (e) {
           console.log(e);
         }

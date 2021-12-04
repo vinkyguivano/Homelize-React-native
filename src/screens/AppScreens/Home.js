@@ -3,10 +3,12 @@ import { StyleSheet, Text, View } from 'react-native'
 import { LoginManager } from 'react-native-fbsdk'
 import { GoogleSignin } from 'react-native-google-signin'
 import { PrimaryButton } from '../../components'
+import AuthContext from '../../context/AuthContext'
 import { storage, api } from '../../utils'
 
 const Home = ({ navigation }) => {
   const [user , setUser] = useState('');
+  const { signOut } = React.useContext(AuthContext)
 
   useEffect(() => {
     async function fetchData(){
@@ -41,8 +43,7 @@ const Home = ({ navigation }) => {
         await GoogleSignin.signOut();
       }
       await storage.removeData('client_data');
-      
-      navigation.replace('Auth');
+      signOut()
 
     } catch (error) {
       alert('Terjadi kesalahan, gagal logout')

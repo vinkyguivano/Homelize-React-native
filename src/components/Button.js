@@ -31,6 +31,7 @@ const PrimaryButton = ({ onPress, style, title, isDisabled }) => (
       {backgroundColor: !isDisabled ?  color.primary : color.disabled,
         justifyContent: 'center',
         height: Dimensions.get('window').height * 0.065,
+        borderRadius: 10
       },
       style
     ]}>
