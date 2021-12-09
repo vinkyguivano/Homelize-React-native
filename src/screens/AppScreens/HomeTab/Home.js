@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { banner1, banner2, architect, interior } from '../../assets'
-import { api, color, font, storage } from '../../utils'
-import * as Container from '../../components/Container'
-import * as HText from '../../components/Text'
-import * as Carousel from '../../components/Carousel'
-import * as Card from '../../components/Card'
+import { Dimensions, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
+import { banner1, banner2, architect, interior } from '../../../assets'
+import { api, color, font, storage } from '../../../utils'
+import * as Container from '../../../components/Container'
+import * as HText from '../../../components/Text'
+import * as Carousel from '../../../components/Carousel'
+import * as Card from '../../../components/Card'
+import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 const Home = ({ navigation }) => {
   const [user, setUser] = useState('')
@@ -93,8 +94,13 @@ const Home = ({ navigation }) => {
       <View style={styles.container}>
         <Container.GreenBackGround>
           <View style={styles.headerContainer}>
-            <HText.Primary style={styles.welcomeText}>Selamat Datang,</HText.Primary>
-            <Text style={styles.username}>{user.name}</Text>
+            <View>
+              <HText.Primary style={styles.welcomeText}>Selamat Datang,</HText.Primary>
+              <Text style={styles.username}>{user.name}</Text>
+            </View>
+            <TouchableWithoutFeedback onPress={()=> alert('Hello')}>
+              <MaterialIcons name="heart-outline" size={18} color={'#ffffff'} style={styles.icon}/>
+            </TouchableWithoutFeedback>
           </View>
         </Container.GreenBackGround>
         <View style={styles.carouselContainer}>
@@ -154,7 +160,9 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     paddingHorizontal: 30,
-    paddingTop: 20
+    paddingTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   },
   welcomeText: {
     fontFamily: font.primary,
@@ -172,4 +180,9 @@ const styles = StyleSheet.create({
   carouselContainer: {
     marginTop: -(width * 0.37),
   },
+  icon: {
+    alignSelf: 'center',
+    fontSize: 20,
+    marginRight: 5
+  }
 })
