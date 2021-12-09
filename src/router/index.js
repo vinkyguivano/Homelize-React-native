@@ -16,7 +16,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabScreen = () => (
+const MainTabScreen = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
       tabBarIcon: ({focused, color, size}) => {
@@ -35,6 +35,7 @@ const TabScreen = () => (
       },
       tabBarActiveTintColor : color.primary,
       tabBarInactiveTintColor: 'gray',
+      headerShown: false
     })} >
     <Tab.Screen name="Home" component={Home} />
     <Tab.Screen name="Order" component={Order} />
@@ -47,10 +48,13 @@ const Router = ({ state }) => {
   return (
     <Stack.Navigator>
       {
-        state.isLoading ? (
+        state.isLoading ? 
+        (
           <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false }} />
-        ) : !state.userToken ? (
-          <>
+        ) 
+        : !state.userToken ? 
+        (
+          <Stack.Group>
             <Stack.Screen
               name="Login"
               component={Login}
@@ -59,9 +63,13 @@ const Router = ({ state }) => {
                 animationTypeForReplace: state.isSignout ? 'pop' : 'push'
               }} />
             <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
-          </>
-        ) : (
-          <Stack.Screen name="Tab" component={TabScreen} options={{ headerShown: false }} />
+          </Stack.Group>
+        ) 
+        : 
+        (
+          <Stack.Group>
+            <Stack.Screen name="Tab" component={MainTabScreen} options={{ headerShown: false }} />
+          </Stack.Group>
         )
       }
 

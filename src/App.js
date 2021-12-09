@@ -61,7 +61,10 @@ const App = () => {
         await storage.storeData("client_data", data)
         dispatch({ type: 'SIGN_IN', token: data.token });
       },
-      signOut: () => dispatch({ type: 'SIGN_OUT' }),
+      signOut: async () => {
+        await storage.removeData("client_data")
+        dispatch({ type: 'SIGN_OUT' })
+      },
     }),
     []
   );
