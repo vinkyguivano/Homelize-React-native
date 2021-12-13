@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
+import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { banner1, banner2, architect, interior } from '../../../assets'
 import { api, color, font, storage } from '../../../utils'
 import * as Container from '../../../components/Container'
@@ -7,6 +7,7 @@ import * as HText from '../../../components/Text'
 import * as Carousel from '../../../components/Carousel'
 import * as Card from '../../../components/Card'
 import MaterialIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import { showMessage } from 'react-native-flash-message'
 
 const Home = ({ navigation }) => {
   const [user, setUser] = useState('')
@@ -16,7 +17,7 @@ const Home = ({ navigation }) => {
     carouselItems: [
       {
         imgSource: banner1,
-        destination: 'Profile',
+        destination: 'Design',
       },
       {
         imgSource: banner2,
@@ -24,6 +25,7 @@ const Home = ({ navigation }) => {
       }
     ]
   })
+  const [errorMsg, setErrorMsg] = useState('');
 
   const [professionalTypes, setProfessionalTypes] = useState([
     {
@@ -49,19 +51,32 @@ const Home = ({ navigation }) => {
         let { data: rooms } = await api.get('design/rooms', data.token)
         setRoomCategory(rooms)
       } catch (e) {
-        console.log(e)
+        setErrorMsg("Terjadi kesalahan")
       }
     }
 
     fetchData();
   }, [])
 
+  useEffect(() => {
+    if(errorMsg){
+      showMessage({
+        message: errorMsg,
+        type: 'danger'
+      })
+    }
+  }, [errorMsg])
+
 
   const renderBannerItem = ({ item, index }, parallaxProps) => {
     return (
       <Card.Home
         item={item}
-        onPress={() => alert("hELLO")}
+        onPress={() => {
+          navigation.navigate("Catalogue", {
+            screen: item.destination
+          })
+        }}
         type="Banner"
         {...parallaxProps} />
     )
@@ -82,7 +97,10 @@ const Home = ({ navigation }) => {
     return (
       <Card.Home
         item={item}
-        onPress={() => alert('helloo')}
+        onPress={() => navigation.navigate("Catalogue", {
+          screen: 'Design',
+          params: { rid: item.id}
+        })}
         type="Design"
         {...parallaxProps}
       />
@@ -98,9 +116,9 @@ const Home = ({ navigation }) => {
               <HText.Primary style={styles.welcomeText}>Selamat Datang,</HText.Primary>
               <Text style={styles.username}>{user.name}</Text>
             </View>
-            <TouchableWithoutFeedback onPress={()=> alert('Hello')}>
+            <TouchableOpacity onPress={()=> alert('Hello')}>
               <MaterialIcons name="heart-outline" size={18} color={'#ffffff'} style={styles.icon}/>
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
           </View>
         </Container.GreenBackGround>
         <View style={styles.carouselContainer}>

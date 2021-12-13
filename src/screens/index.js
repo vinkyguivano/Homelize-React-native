@@ -5,6 +5,7 @@ import Home from "./AppScreens/HomeTab/Home";
 import Order from "./AppScreens/OrderTab/Order";
 import Chat from "./AppScreens/ChatTab/Chat";
 import Profile from "./AppScreens/ProfileTab/Profile";
+import Design from "./AppScreens/HomeTab/Design"
 
 export {
   Login, 
@@ -13,5 +14,6 @@ export {
   Home,
   Order,
   Chat,
-  Profile
+  Profile,
+  Design
 }

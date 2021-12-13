@@ -3,6 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import Router from './router';
 import { storage } from './utils';
 import AuthContext from './context/AuthContext';
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import FlashMessage from 'react-native-flash-message';
 
 const App = () => {
   const [state, dispatch] = React.useReducer(
@@ -70,11 +72,14 @@ const App = () => {
   );
 
   return (
-    <AuthContext.Provider value={authContext}>
-      <NavigationContainer>
-        <Router state={state} />
-      </NavigationContainer>
-    </AuthContext.Provider>
+    <SafeAreaProvider>
+      <AuthContext.Provider value={authContext}>
+        <NavigationContainer>
+          <Router state={state} />
+        </NavigationContainer>
+        <FlashMessage position={"top"}/>
+      </AuthContext.Provider>
+    </SafeAreaProvider>
   )
 }
 
