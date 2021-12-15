@@ -6,6 +6,7 @@ import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 import { color, font } from '../utils';
 import * as TextM from './Text'
 import { profile } from '../assets/index'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 const { width, height } = Dimensions.get('window')
 
@@ -154,9 +155,8 @@ const styles = StyleSheet.create({
   },
   designItemContainer: {
     width: '48%',
-    marginBottom: 18,
-    borderWidth: 0.5,
-    borderColor: 'darkgrey',
+    marginBottom: 20,
+    elevation: 8,
     borderRadius: 5,
     overflow: 'hidden',
     backgroundColor: color.white
@@ -206,5 +206,137 @@ const stylesFilterItem = StyleSheet.create({
   itemText: {
     fontSize: 12,
     fontFamily: font.secondary
+  }
+})
+
+export const Professional = memo(({ item, index }) => {
+  let rating;
+  if (item.total_rating) {
+    let [a, b] = item.total_rating.split('.')
+
+    if (b <= 2) {
+      b = 0
+    } else if (b >= 8) {
+      b = 0
+      a += 1
+    } else {
+      b = 5
+    }
+    let array = [];
+    
+    for(let i = 0 ; i < a ; i++ ){
+      array.push(<Icon name="star" size={18} key={i} color={'#ebb61b'}/>)
+    }
+    if(b === 5) array.push(<Icon name="star-half-full" size={18} color={'#ebb61b'} />)
+
+    rating = (
+    <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+      {array}
+      <Text style={{fontFamily: font.primary, fontSize: 12, color: 'black', marginLeft: 4}}>{item.total_rating}</Text>
+    </View>
+    )
+
+  } else {
+    rating = <Text style={{fontFamily: font.primary, fontSize: 13, fontStyle: 'italic'}}>No Rating</Text>
+  }
+
+  return (
+    <View style={stylesProfessional.container}>
+      <Image
+        source={{ uri: item.thumbnail }}
+        style={stylesProfessional.image}
+      />
+      <View style={stylesProfessional.infoBox}>
+        <View style={stylesProfessional.nameBox}>
+          <Image source={{ uri: item.image_path }} style={stylesProfessional.avatar} />
+          <Text style={stylesProfessional.name} numberOfLines={1}>{item.name}</Text>
+        </View>
+        <View style={stylesProfessional.nameBox}>
+          {rating}
+        </View>
+        <View style={stylesProfessional.nameBox}>
+          <Icon name='map-marker-outline' size={18} style={{marginRight: 5, color: 'black'}} />
+          <Text style={stylesProfessional.address} numberOfLines={1}>{item.city_name}, {item.province_name}</Text>
+        </View>
+        <View>
+          <Text style={stylesProfessional.address}>{item.type_name}</Text>
+        </View>
+      </View>
+    </View>
+  )
+})
+
+const stylesProfessional = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    backgroundColor: 'white',
+    borderRadius: 6,
+    marginBottom: 20,
+    elevation: 8,
+  },
+  image: {
+    width: width * 0.3527,
+    aspectRatio: 1.08,
+    resizeMode: 'cover',
+  },
+  infoBox: {
+    marginVertical: 10,
+    marginHorizontal: 12,
+    flex: 1,
+  },
+  nameBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 9
+  },
+  avatar: {
+    width: 25,
+    height: 25,
+    borderRadius: 25,
+    marginRight: 8
+  },
+  name: {
+    fontFamily: font.primary,
+    fontSize: 14,
+    flex: 1,
+    color: color.black
+  },
+  address: {
+    flex: 1,
+    fontFamily: font.primary,
+    fontSize: 10,
+    color: color.black,
+  }
+})
+
+export const CityItem = ({ item, onPress, selectedItem }) => {
+  return (
+    <TouchableNativeFeedback onPress={onPress}>
+      <View style={style1.container}>
+        <Text style={style1.itemText}>{item.name}, {item.province_name}</Text>
+        <Icon 
+          name={selectedItem ? "checkbox-marked" : "checkbox-blank-outline"} 
+          size={23}
+          color={selectedItem ? color.primary: 'darkgrey'} />
+      </View>
+    </TouchableNativeFeedback>
+  )
+}
+
+const style1 = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    paddingTop: height * 0.0198,
+    marginRight: 8,
+    borderBottomColor: 'darkgrey',
+    borderBottomWidth: 0.7,
+    paddingBottom: height * 0.0198,
+    justifyContent: 'space-between'
+  },
+  itemText:{
+    fontFamily: font.secondary,
+    fontSize: 14,
   }
 })

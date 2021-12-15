@@ -38,3 +38,54 @@ const styles = StyleSheet.create({
     margin: 12,
   },
 })
+
+export function Professional(){
+  return (
+    <View style={stylesP.container}>
+      <SkeletonPlaceholder>
+        <View style={stylesP.image} />
+      </SkeletonPlaceholder>
+      <View style={stylesP.infoBox}>
+        <SkeletonPlaceholder>
+          <View style={{flexDirection: 'row', marginBottom: 9,}}>
+            <View style={stylesP.avatar}/>
+            <View style={{height: 20, width: 100}}/>
+          </View>
+          <View style={stylesP.item}/>
+          <View style={stylesP.item}/>
+        </SkeletonPlaceholder>
+      </View>
+    </View>
+  )
+}
+
+const stylesP = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
+    backgroundColor: 'white',
+    borderRadius: 6,
+    marginBottom: 20,
+    elevation: 8,
+  },
+  image: {
+    width: width * 0.3527,
+    aspectRatio: 1.08,
+  },
+  infoBox: {
+    marginVertical: 10,
+    marginHorizontal: 12,
+    flex: 1,
+  },
+  item: {
+    marginBottom: 9,
+    height: 20,
+    width: '90%'
+  },
+  avatar: {
+    width: 25,
+    height: 25,
+    borderRadius: 25,
+    marginRight: 8
+  },
+})

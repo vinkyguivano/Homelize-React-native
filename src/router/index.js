@@ -8,7 +8,8 @@ import {
   Order,
   Chat,
   Profile,
-  Design
+  Design,
+  Professional
 } from '../screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -36,10 +37,11 @@ const CatalogueTabs = () => {
         },
         tabBarActiveTintColor: color.primary,
         tabBarInactiveTintColor: 'grey',
+        lazy: true,
       }}
     >
-      <TopTab.Screen name="Design" component={Design} options={{ title: 'Desain' }} />
-      <TopTab.Screen name="Professional" component={Profile} options={{ title: 'Professional' }} />
+      <TopTab.Screen name="Design" component={Design} options={{ title: 'Desain'}} />
+      <TopTab.Screen name="Professional" component={Professional} options={{ title: 'Professional' }} />
     </TopTab.Navigator>
   )
 }

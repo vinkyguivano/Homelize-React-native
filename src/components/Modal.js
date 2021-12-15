@@ -1,20 +1,20 @@
 import React, { useState } from 'react'
-import { Dimensions, ScrollView, StyleSheet, View } from 'react-native'
+import { Dimensions, FlatList, ScrollView, StyleSheet, View } from 'react-native'
 import Modal from 'react-native-modal'
 import * as MText from '../components/Text'
 import * as Card from '../components/Card'
 import * as Button from '../components/Button'
 import { color, font } from '../utils';
 
-const { width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
-export function Design({ isVisible, toggleModal, designs, rooms, budgets, tempFilter, selectedFilter, selectFilterItem, resetFilter, onSubmit}) {
+export function Design({ isVisible, toggleModal, designs, rooms, budgets, tempFilter, selectedFilter, selectFilterItem, resetFilter, onSubmit }) {
   const { budget, room, style } = tempFilter
   const [scrollOffset, setScrollOffset] = useState(null)
   const scrollViewRef = React.useRef(null)
 
   const handleOnScroll = event => {
-     setScrollOffset(event.nativeEvent.contentOffset.y)
+    setScrollOffset(event.nativeEvent.contentOffset.y)
   };
 
   const handleScrollTo = p => {
@@ -39,17 +39,17 @@ export function Design({ isVisible, toggleModal, designs, rooms, budgets, tempFi
       }}
     >
       <View style={styles.container}>
-        <View style={styles.greyBar}/>
-        <View style={{paddingVertical: 15, flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={styles.greyBar} />
+        <View style={{ paddingVertical: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
           <MText.Title style={styles.fontTitle}>
             Filter
           </MText.Title>
-          <MText.Title 
+          <MText.Title
             style={{
-              ...styles.fontTitle, 
+              ...styles.fontTitle,
               opacity: 0,
               color: color.primary,
-              ...( budget || room || style) && { opacity: 1 } 
+              ...(budget || room || style) && { opacity: 1 }
             }}
             onPress={resetFilter}>
             Reset
@@ -62,30 +62,30 @@ export function Design({ isVisible, toggleModal, designs, rooms, budgets, tempFi
           <View flex={1} onStartShouldSetResponder={() => true}>
             <View style={styles.titleContainer}>
               <MText.Title style={styles.fontTitle}>
-                Jenis Desain
+                Ruangan
               </MText.Title>
               <View style={styles.listContainer}>
-                {designs.map((i) => (
-                  <Card.FilterItem 
-                    item={i} 
-                    key={i.id} 
-                    onPress={() => selectFilterItem(i.id, 'style')} 
-                    selectedItem={style === i.id }/>
-                  ))}
+                {rooms.map((i) => (
+                  <Card.FilterItem
+                    item={i}
+                    key={i.id}
+                    onPress={() => selectFilterItem(i.id, 'room')}
+                    selectedItem={room === i.id} />
+                ))}
               </View>
             </View>
             <View style={styles.titleContainer}>
               <MText.Title style={styles.fontTitle}>
-                Jenis Ruangan
+                Tipe Desain
               </MText.Title>
               <View style={styles.listContainer}>
-                {rooms.map((i) => (
-                  <Card.FilterItem 
-                    item={i} 
-                    key={i.id} 
-                    onPress={() => selectFilterItem(i.id, 'room')} 
-                    selectedItem={room === i.id}/>
-                  ))}
+                {designs.map((i) => (
+                  <Card.FilterItem
+                    item={i}
+                    key={i.id}
+                    onPress={() => selectFilterItem(i.id, 'style')}
+                    selectedItem={style === i.id} />
+                ))}
               </View>
             </View>
             <View style={styles.titleContainer}>
@@ -94,22 +94,22 @@ export function Design({ isVisible, toggleModal, designs, rooms, budgets, tempFi
               </MText.Title>
               <View style={styles.listContainer}>
                 {budgets.map((i) => (
-                  <Card.FilterItem 
-                    item={i} 
-                    key={i.id} 
-                    onPress={() => selectFilterItem(i.id, 'budget')} 
-                    selectedItem={budget === i.id}/>
-                  ))}
+                  <Card.FilterItem
+                    item={i}
+                    key={i.id}
+                    onPress={() => selectFilterItem(i.id, 'budget')}
+                    selectedItem={budget === i.id} />
+                ))}
               </View>
             </View>
-            <View style={{marginBottom: 60}}/>
+            <View style={{ marginBottom: 60 }} />
           </View>
         </ScrollView>
-        <View style={[styles.buttonContainer, 
-          (JSON.stringify(tempFilter) !== JSON.stringify(selectedFilter)) && { display: 'flex', opacity: 1}]}>
-          <Button.PrimaryButton 
+        <View style={[styles.buttonContainer,
+        (JSON.stringify(tempFilter) !== JSON.stringify(selectedFilter)) && { display: 'flex', opacity: 1 }]}>
+          <Button.PrimaryButton
             title={"Terapkan"}
-            onPress={onSubmit}/>
+            onPress={onSubmit} />
         </View>
       </View>
     </Modal>
@@ -140,9 +140,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'darkgrey',
   },
-  fontTitle:{
-    fontFamily: font.secondary, 
-    fontWeight: 'bold', 
+  fontTitle: {
+    fontFamily: font.secondary,
+    fontWeight: 'bold',
     fontSize: 15
   },
   listContainer: {
@@ -163,4 +163,122 @@ const styles = StyleSheet.create({
     opacity: 0,
     display: 'none'
   }
+})
+
+export const Professional = ({ isVisible, toggleModal, filter, tempFilter, selectedFilter, selectFilterItem, resetFilter, onSubmit }) => {
+  const { sorts, types, cities } = filter;
+  const { sort, type, city } = tempFilter;
+  const [scrollOffset, setScrollOffset] = useState(null)
+  const scrollViewRef = React.useRef(null)
+
+  const handleOnScroll = event => {
+    setScrollOffset(event.nativeEvent.contentOffset.y)
+  };
+
+  const handleScrollTo = p => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo(p);
+    }
+  };
+
+  return (
+    <Modal
+      isVisible={isVisible}
+      onBackdropPress={toggleModal}
+      onSwipeComplete={toggleModal}
+      swipeDirection={'down'}
+      onBackButtonPress={toggleModal}
+      useNativeDriverForBackdrop={true}
+      scrollTo={handleScrollTo}
+      scrollOffset={scrollOffset}
+      propagateSwipe={true}
+      style={{
+        margin: 0
+      }}>
+      <View style={styles.container}>
+        <View style={styles.greyBar} />
+        <View style={{ paddingVertical: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <MText.Title style={styles.fontTitle}>
+            Filter
+          </MText.Title>
+          <MText.Title
+            style={{
+              ...styles.fontTitle,
+              opacity: 0,
+              color: color.primary,
+              ...(sort || type || city) && { opacity: 1 }
+            }}
+            onPress={resetFilter}>
+            Reset
+          </MText.Title>
+        </View>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          ref={scrollViewRef}
+          onScroll={handleOnScroll}
+          nestedScrollEnabled>
+          <View flex={1} onStartShouldSetResponder={() => true}>
+            <View style={styles.titleContainer}>
+              <MText.Title style={styles.fontTitle}>
+                Urutkan
+              </MText.Title>
+              <View style={styles.listContainer}>
+                {sorts.map((i) => (
+                  <Card.FilterItem
+                    item={i}
+                    key={i.id}
+                    onPress={() => selectFilterItem(i.id, 'sort')}
+                    selectedItem={sort === i.id} />
+                ))}
+              </View>
+            </View>
+            <View style={styles.titleContainer}>
+              <MText.Title style={styles.fontTitle}>
+                Tipe
+              </MText.Title>
+              <View style={styles.listContainer}>
+                {types.map((i) => (
+                  <Card.FilterItem
+                    item={i}
+                    key={i.id}
+                    onPress={() => selectFilterItem(i.id, 'type')}
+                    selectedItem={type === i.id} />
+                ))}
+              </View>
+            </View>
+            <View style={styles.titleContainer}>
+              <MText.Title style={styles.fontTitle}>
+                Kota
+              </MText.Title>
+              <View style={styles.listContainer}>
+                <FlatList
+                  style={{ height: height * 0.2928 }}
+                  data={cities}
+                  renderItem={({ item }) => (
+                    <Card.CityItem 
+                      item={item}
+                      onPress={() => selectFilterItem(item.id, 'city')} 
+                      selectedItem={city === item.id}/>
+                  )}
+                  keyExtractor={(item) => item.id}
+                  nestedScrollEnabled
+                />
+              </View>
+            </View>
+            <View style={{ marginBottom: 60 }} />
+          </View>
+        </ScrollView>
+        <View style={[styles.buttonContainer,
+        (JSON.stringify(tempFilter) !== JSON.stringify(selectedFilter)) && { display: 'flex', opacity: 1 }]}>
+          <Button.PrimaryButton
+            title={"Terapkan"}
+            onPress={onSubmit} />
+        </View>
+      </View>
+    </Modal>
+  )
+}
+
+const styles2 = StyleSheet.create({
+
 })

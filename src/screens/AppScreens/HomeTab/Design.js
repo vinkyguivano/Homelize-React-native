@@ -8,6 +8,7 @@ import * as Skeleton from '../../../components/Skeleton'
 import * as NotFound from '../../../components/NotFound'
 import * as Modal from '../../../components/Modal'
 import { showMessage } from 'react-native-flash-message'
+import { useScrollToTop } from '@react-navigation/native'
 
 const Design = ({ route, navigation }) => {
   const [token, setToken] = useState("");
@@ -21,7 +22,7 @@ const Design = ({ route, navigation }) => {
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(false)
   const { designs, rooms, budgets } = filter
-  const [refresh, setRefresh] = useState(false)
+  const [refresh, setRefresh] = useState(true)
   const [loading, setLoading] = useState(true)
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
@@ -159,8 +160,11 @@ const Design = ({ route, navigation }) => {
       setDesignList(currentList)
       setPage(_page)
       setHasMore(_page < last_page)
-      setRefresh(false)
-      setLoading(false)
+      if(refresh){
+        setRefresh(false)
+        setLoading(false)
+      }
+     
     } catch (e) {
       setRefresh(false)
       setErrorMsg(e.toString())
@@ -199,15 +203,17 @@ const Design = ({ route, navigation }) => {
     setIsModalVisible(!isModalVisible)
   }
 
+  useScrollToTop(flatListRef)
   return (
     <View>
       <FlatList
         ref={flatListRef}
+        stickyHeaderHiddenOnScroll={true}
         stickyHeaderIndices={[0]}
         numColumns={2}
         columnWrapperStyle={styles.columnWrapper}
         data={designList}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={onRenderItem}
         showsVerticalScrollIndicator={false}
         onEndReachedThreshold={0.8}

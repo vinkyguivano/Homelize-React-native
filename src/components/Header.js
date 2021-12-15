@@ -16,8 +16,8 @@ export const Primary = memo(({ placeholder, onChangeText, value, onSubmit, onOpe
             badgeStyle={{ backgroundColor: color.primary }}
             containerStyle={{
               position: 'absolute',
-              top: -5,
-              right: -5,
+              top: -6,
+              right: -6,
               ... !filterCount && { display: 'none' }
             }}
           />

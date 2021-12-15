@@ -34,6 +34,7 @@ export const Primary = ({ data, index = 1, renderItem, paginate = false, paralla
         itemWidth={width - 60}
         renderItem={renderItem}
         hasParallaxImages={parallax ? true :false}
+        inactiveSlideOpacity={1}
         {...props} 
       />
       {paginate ? pagination() : null}

@@ -6,6 +6,7 @@ import Order from "./AppScreens/OrderTab/Order";
 import Chat from "./AppScreens/ChatTab/Chat";
 import Profile from "./AppScreens/ProfileTab/Profile";
 import Design from "./AppScreens/HomeTab/Design"
+import Professional from "./AppScreens/HomeTab/Professional";
 
 export {
   Login, 
@@ -15,5 +16,6 @@ export {
   Order,
   Chat,
   Profile,
-  Design
+  Design,
+  Professional
 }
