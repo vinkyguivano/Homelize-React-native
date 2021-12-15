@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { LoginManager } from 'react-native-fbsdk'
 import { GoogleSignin } from 'react-native-google-signin'
-import { PrimaryButton } from '../../components'
-import AuthContext from '../../context/AuthContext'
-import { storage, api } from '../../utils'
+import { PrimaryButton } from '../../../components'
+import AuthContext from '../../../context/AuthContext'
+import { api, storage } from '../../../utils'
 
-const Home = ({ navigation }) => {
+const Profile = () => {
   const [user , setUser] = useState('');
   const { signOut } = React.useContext(AuthContext)
 
@@ -42,8 +42,8 @@ const Home = ({ navigation }) => {
         await GoogleSignin.revokeAccess();
         await GoogleSignin.signOut();
       }
-      await storage.removeData('client_data');
-      signOut()
+      
+      await signOut()
 
     } catch (error) {
       alert('Terjadi kesalahan, gagal logout')
@@ -59,6 +59,6 @@ const Home = ({ navigation }) => {
   )
 }
 
-export default Home
+export default Profile
 
 const styles = StyleSheet.create({})

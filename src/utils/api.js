@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = {
-  get: (url, token = "", params = {},) => {
+  get: (url, token = "", params = {}) => {
     return axios.get(`http://127.0.0.1:8000/api/${url}`, {
       params: {
         ...params

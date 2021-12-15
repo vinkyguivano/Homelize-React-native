@@ -1,10 +1,11 @@
 import Login from "./AuthScreens/Login";
 import Splash from "./Splash";
 import Register from "./AuthScreens/Register";
-import Home from "./AppScreens/Home";
-import Order from "./AppScreens/Order";
-import Chat from "./AppScreens/Chat";
-import Profile from "./AppScreens/Profile";
+import Home from "./AppScreens/HomeTab/Home";
+import Order from "./AppScreens/OrderTab/Order";
+import Chat from "./AppScreens/ChatTab/Chat";
+import Profile from "./AppScreens/ProfileTab/Profile";
+import Design from "./AppScreens/HomeTab/Design"
 
 export {
   Login, 
@@ -13,5 +14,6 @@ export {
   Home,
   Order,
   Chat,
-  Profile
+  Profile,
+  Design
 }
