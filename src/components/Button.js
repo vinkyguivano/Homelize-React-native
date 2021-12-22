@@ -25,16 +25,32 @@ const Google = ({ onPress, style }) => (
   </TouchableNativeFeedback>
 )
 
-const PrimaryButton = ({ onPress, style, title, isDisabled }) => (
+const PrimaryButton = ({ 
+                onPress, 
+                title, 
+                isDisabled, 
+                height, 
+                width, 
+                marginTop,
+                marginRight,
+                marginLeft,
+                marginBottom,
+                marginHorizontal,
+                marginVetical }) => (
   <TouchableNativeFeedback onPress={onPress} disabled={isDisabled || false}>
-    <View style={[
-      {backgroundColor: !isDisabled ?  color.primary : color.disabled,
-        justifyContent: 'center',
-        height: Dimensions.get('window').height * 0.065,
-        borderRadius: 10
-      },
-      style
-    ]}>
+    <View style={{
+      backgroundColor: !isDisabled ?  color.primary : color.disabled,
+      justifyContent: 'center',
+      borderRadius: 10,
+      height: height || Dimensions.get('window').height * 0.065,
+      width, 
+      marginTop,
+      marginRight,
+      marginLeft,
+      marginBottom,
+      marginHorizontal,
+      marginVetical
+      }}>
       <Text style={{textAlign: 'center', fontFamily: font.primary,
     fontSize: 16, color: color.white}}>{title}</Text>
     </View>
@@ -46,7 +62,6 @@ export {
   Google,
   PrimaryButton
 }
-
 
 const styles = StyleSheet.create({
   FacebookContainer: {

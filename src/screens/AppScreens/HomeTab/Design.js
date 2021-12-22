@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { StyleSheet, View, FlatList, Dimensions, Text, Button, Image, TextInput } from 'react-native'
 import { storage, api, color } from '../../../utils'
 import PrimaryIndicator from '../../../components/ActivityIndicator'
@@ -171,9 +171,14 @@ const Design = ({ route, navigation }) => {
     }
   }
 
-  const onRenderItem = ({ item, index }) => (
-    <Card.Design item={item} index={index} />
-  )
+  const onRenderItem = ({ item, index }) => {
+    return (
+      <Card.Design 
+      item={item} 
+      index={index}
+      navigation={navigation} />
+    )
+}
 
   const renderLoading = (
     <View style={{ alignItems: 'center', marginTop: 10, marginBottom: 20 }}>
@@ -205,7 +210,7 @@ const Design = ({ route, navigation }) => {
 
   useScrollToTop(flatListRef)
   return (
-    <View>
+    <View style={{flex: 1, backgroundColor: 'white'}}>
       <FlatList
         ref={flatListRef}
         stickyHeaderHiddenOnScroll={true}

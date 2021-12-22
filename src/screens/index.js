@@ -7,6 +7,9 @@ import Chat from "./AppScreens/ChatTab/Chat";
 import Profile from "./AppScreens/ProfileTab/Profile";
 import Design from "./AppScreens/HomeTab/Design"
 import Professional from "./AppScreens/HomeTab/Professional";
+import DesignDetail from "./AppScreens/HomeTab/DesignDetail";
+import ProfessionalDetail from "./AppScreens/HomeTab/ProfessionalDetail";
+import LikedImage from "./AppScreens/HomeTab/LikedImage";
 
 export {
   Login, 
@@ -17,5 +20,8 @@ export {
   Chat,
   Profile,
   Design,
-  Professional
+  Professional,
+  DesignDetail, 
+  LikedImage,
+  ProfessionalDetail
 }

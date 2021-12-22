@@ -228,7 +228,7 @@ const Login = ({ navigation }) => {
             isDisabled={disable}
             onPress={onSubmit}
             title="Log In"
-            style={{ marginTop: 29 }} />
+            marginTop={29} />
         </View>
         <View style={{ flexDirection: 'row', marginVertical: 24 }}>
           <View style={styles.border} />

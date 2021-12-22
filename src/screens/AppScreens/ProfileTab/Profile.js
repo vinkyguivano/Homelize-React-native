@@ -54,7 +54,7 @@ const Profile = () => {
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <Text>Hello {user?.name}</Text>
-      <PrimaryButton title="Log Out" onPress={onLogout} style={{width: 320}}/>
+      <PrimaryButton title="Log Out" onPress={onLogout} width={320}/>
     </View>
   )
 }

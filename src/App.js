@@ -5,6 +5,7 @@ import { storage } from './utils';
 import AuthContext from './context/AuthContext';
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import FlashMessage from 'react-native-flash-message';
+import { Host } from 'react-native-portalize' 
 
 const App = () => {
   const [state, dispatch] = React.useReducer(
@@ -13,43 +14,43 @@ const App = () => {
         case 'RESTORE_TOKEN':
           return {
             ...prevState,
-            userToken: action.token,
+            user: action.user,
             isLoading: false,
           };
         case 'SIGN_IN':
           return {
             ...prevState,
             isSignout: false,
-            userToken: action.token,
+            user: action.user,
           };
         case 'SIGN_OUT':
           return {
             ...prevState,
             isSignout: true,
-            userToken: null,
+            user: null,
           };
       }
     },
     {
       isLoading: true,
       isSignout: false,
-      userToken: null,
+      user: null,
     }
   );
 
 
   React.useEffect(() => {
     const bootstrapAsync = async () => {
-      let userToken;
+      let user;
 
       try {
         const res = await storage.getData("client_data");
-        userToken = res?.token
+        user = res
       } catch (e) {
-        userToken = null
+        user = null
       }
 
-      dispatch({ type: 'RESTORE_TOKEN', token: userToken });
+      dispatch({ type: 'RESTORE_TOKEN', user: user });
     };
 
     setTimeout(() => {
@@ -61,21 +62,24 @@ const App = () => {
     () => ({
       signIn: async (data) => {
         await storage.storeData("client_data", data)
-        dispatch({ type: 'SIGN_IN', token: data.token });
+        dispatch({ type: 'SIGN_IN', user: data });
       },
       signOut: async () => {
         await storage.removeData("client_data")
         dispatch({ type: 'SIGN_OUT' })
       },
+      user: state.user
     }),
-    []
+    [state.user]
   );
 
   return (
     <SafeAreaProvider>
       <AuthContext.Provider value={authContext}>
         <NavigationContainer>
-          <Router state={state} />
+          <Host>
+            <Router state={state} />
+          </Host>
         </NavigationContainer>
         <FlashMessage position={"top"}/>
       </AuthContext.Provider>

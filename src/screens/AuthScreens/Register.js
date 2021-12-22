@@ -259,7 +259,7 @@ const Register = ({ navigation }) => {
             isDisabled={disable}
             onPress={onSubmit}
             title="Buat Akun"
-            style={{ marginTop: 29 }} />
+            marginTop={29} />
         </View>
         <View style={{ flexDirection: 'row', marginVertical: 24 }}>
           <View style={styles.border} />

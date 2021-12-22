@@ -15,8 +15,8 @@ export function Design({ label, styleContainer, styleImage, fontStyle }) {
     }}>
       <Image source={notFound} style={{
         resizeMode: 'contain',
-        width: width * 0.437,
-        height: height * 0.263,
+        width: width * 0.407,
+        height: height * 0.233,
         ...styleImage
       }} />
       <Text
@@ -28,7 +28,7 @@ export function Design({ label, styleContainer, styleImage, fontStyle }) {
           ...fontStyle
         }}>
         {label ? label : `
-        Wah, hasil pencarian anda tidak tersedia
+        Maaf, hasil pencarian anda tidak tersedia
         Coba kata kunci lainnya`}
       </Text>
 

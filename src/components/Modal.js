@@ -1,10 +1,15 @@
-import React, { useState } from 'react'
-import { Dimensions, FlatList, ScrollView, StyleSheet, View } from 'react-native'
+import React, { useState, forwardRef, useRef } from 'react'
+import { Animated, Dimensions, FlatList, Image, ScrollView, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View } from 'react-native'
 import Modal from 'react-native-modal'
 import * as MText from '../components/Text'
 import * as Card from '../components/Card'
 import * as Button from '../components/Button'
-import { color, font } from '../utils';
+import * as NotFound from '../components/NotFound'
+import { api, capitalize, color, font } from '../utils';
+import { Modalize } from 'react-native-modalize'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import ActivityIndicator from './ActivityIndicator'
+import Loading from '../components/Loading'
 
 const { width, height } = Dimensions.get('window');
 
@@ -206,7 +211,7 @@ export const Professional = ({ isVisible, toggleModal, filter, tempFilter, selec
               ...styles.fontTitle,
               opacity: 0,
               color: color.primary,
-              ...(sort || type || city) && { opacity: 1 }
+              ...(sort !== '' || type || city) && { opacity: 1 }
             }}
             onPress={resetFilter}>
             Reset
@@ -279,6 +284,305 @@ export const Professional = ({ isVisible, toggleModal, filter, tempFilter, selec
   )
 }
 
-const styles2 = StyleSheet.create({
+export const Project = forwardRef((props, ref) => {
+  const contentRef = useRef(null)
+  const { project } = props
+  const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+  const scrollY = useRef(new Animated.Value(0)).current;
 
+  const handleScrollToTop = () => {
+    if (contentRef.current) {
+      contentRef.current.getScrollResponder().scrollTo({
+        y: 0,
+        animated: true,
+      });
+    }
+  };
+
+  const renderFloatingComponent = () => (
+    <AnimatedTouchableOpacity
+      style={[
+        styles2.float,
+        {
+          opacity: scrollY.interpolate({
+            inputRange: [400, 500],
+            outputRange: [0, 1],
+            extrapolate: 'clamp',
+          }),
+          transform: [
+            {
+              scale: scrollY.interpolate({
+                inputRange: [400, 550],
+                outputRange: [0.6, 1],
+                extrapolate: 'clamp',
+              }),
+            },
+          ],
+        },
+      ]}
+      onPress={handleScrollToTop}
+      activeOpacity={0.75}
+    >
+      <MText.Main color={"white"}>Top</MText.Main>
+    </AnimatedTouchableOpacity>
+  );
+
+  const images = project ?  project.images.map((item, index) => (
+    <View key={index} style={styles2.itemContainer}>
+      <Image source={{uri: item.image_path}} style={styles2.image}/>
+      <MText.Main marginBottom={5}>Jenis : {item.room}</MText.Main>
+      <MText.Main marginBottom={5}>Tipe : {item.style}</MText.Main>
+      <MText.Main numberOfLines={0} textAlign={'justify'}>{item.description}</MText.Main>
+    </View>
+  )) : null
+
+  return (
+    <Modalize 
+      ref={ref}
+      contentRef={contentRef}
+      FloatingComponent={renderFloatingComponent}
+      handlePosition='inside'
+      handleStyle={{backgroundColor: 'darkgrey'}}
+      snapPoint={height * 0.5124}
+      scrollViewProps={{
+        onScroll: Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+          useNativeDriver: true,
+        }),
+      }}>
+        <View style={styles2.container}>
+          <MText.Main fontSize={17} fontWeight={'bold'} marginBottom={10}>
+            {capitalize(project.name)}
+          </MText.Main>
+          <MText.Main marginBottom={10}>
+            Projek tahun : {project.year}
+          </MText.Main>
+          <MText.Main numberOfLines={0} textAlign={'justify'} marginBottom={20}>
+            {project.description}
+          </MText.Main>
+          {images}
+        </View>
+    </Modalize>
+  )
+})
+
+const styles2 = StyleSheet.create({
+  container: {
+    marginVertical: 30,
+    marginHorizontal: 20,
+  },
+  itemContainer: {
+    marginBottom: 30
+  },
+  image: {
+    width: '80%',
+    aspectRatio: 16/9,
+    marginBottom: 12
+  },
+  float: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 9999,
+
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+
+    width: width * 0.1216,
+    height: width * 0.1216,
+
+    borderRadius: width * 0.1216,
+    backgroundColor: color.primary,
+  }
+})
+
+export const Review = React.forwardRef((props, ref) => {
+  const contentRef = useRef(null)
+  const [reviews, setReviews] = useState(props.reviews)
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+  const [rating, setRating] = useState('')
+  const [loading, setLoading] = useState(false)
+  const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  const fetchReview = async (refresh = false, rating) => {
+    try {
+
+      if(refresh){
+        setLoading(true)
+      }
+
+      let _page = refresh ? 1 : page + 1
+
+      const { data } = await api.get(`professional/professionals/${props.professionalId}/review`, props.token, {
+        page: _page,
+        ...rating ? { rating: rating } : {}
+      })
+
+      const { data: list, last_page } = data
+
+      let currList
+
+      if (refresh) {
+        currList = [...list]
+      } else {
+        currList = [...reviews, ...list]
+      }
+
+      setReviews(currList)
+      setPage(_page)
+      setHasMore(_page < last_page)
+
+      if(refresh){
+        setLoading(false)
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleScrollToTop = () => {
+    if (contentRef.current) {
+      contentRef.current.getScrollResponder().scrollTo({
+        y: 0,
+        animated: true,
+      });
+    }
+  };
+
+  const renderFloatingComponent = () => (
+    <AnimatedTouchableOpacity
+      style={[
+        styles2.float,
+        {
+          opacity: scrollY.interpolate({
+            inputRange: [400, 500],
+            outputRange: [0, 1],
+            extrapolate: 'clamp',
+          }),
+          transform: [
+            {
+              scale: scrollY.interpolate({
+                inputRange: [400, 550],
+                outputRange: [0.6, 1],
+                extrapolate: 'clamp',
+              }),
+            },
+          ],
+        },
+      ]}
+      onPress={handleScrollToTop}
+      activeOpacity={0.75}
+    >
+      <MText.Main color={"white"}>Top</MText.Main>
+    </AnimatedTouchableOpacity>
+  );
+
+  const renderHeader = () => {
+    const item = [
+      {id: 0, label: 'Semua'},
+      {id: 1, label: '1'},
+      {id: 2, label: '2'},
+      {id: 3, label: '3'},
+      {id: 4, label: '4'},
+      {id: 5, label: '5'}
+    ]
+    return (
+      <View style={styles3.headerContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {
+            item.map((item, idx) => (
+              <TouchableNativeFeedback key={idx} onPress={async () => {
+                setRating(item.id)
+                await fetchReview(true, item.id)
+              }}>
+                <View style={{
+                  ...styles3.optionContainer, 
+                  ...(rating == item.id) && { backgroundColor: color.primary }
+                }}>
+                  <Icon name="star" size={18} color={'#ebb61b'}/>
+                  <MText.Main marginLeft={6} {...rating== item.id && { color : 'white'}}>
+                    {item.label}
+                  </MText.Main>
+                </View>
+              </TouchableNativeFeedback>
+            ))
+          }
+        </ScrollView>
+      </View>
+  )}
+
+  const renderItem = ({ item, index }) => {
+   return (
+    <Card.Review item={item} index={index} type="modal"/>
+   )
+  }
+
+  const renderFooter = () => {
+    return (
+      <View>
+        {
+          hasMore && <View style={{marginVertical: 20}}>
+            <ActivityIndicator />
+            </View>
+        }
+      </View>
+    )
+  }
+ 
+  
+  const renderEmpty = () => {
+    return (
+      !loading ? 
+      <NotFound.Design
+        label={'Maaf, ulasan belum tersedia'}
+        fontStyle={{marginTop: 20}}
+      /> :
+      <View style={{marginTop: 30}}>
+        <Loading />
+      </View>
+    )
+  }
+
+  return (
+    <Modalize 
+      ref={ref}
+      contentRef={contentRef}
+      handlePosition='inside'
+      handleStyle={{backgroundColor: 'darkgrey'}}
+      snapPoint={height * 0.5124}
+      FloatingComponent={renderFloatingComponent}
+      HeaderComponent={renderHeader}
+      flatListProps={{
+        data: reviews,
+        renderItem: renderItem,
+        keyExtractor: (item, index) => index.toString(),
+        onScroll: Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+          useNativeDriver: true,
+        }),
+        scrollEventThrottle: 16,
+        onEndReachedThreshold: 0.6,
+        onEndReached: () => fetchReview(false, rating),
+        ListFooterComponent: renderFooter,
+        ListEmptyComponent: renderEmpty
+      }}
+    />
+  )
+})
+
+const styles3 = StyleSheet.create({
+  headerContainer:{
+    marginTop: 30,
+    paddingVertical: 20,
+    paddingLeft: 20,
+    backgroundColor: 'lightgrey'
+  },
+  optionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 20,
+    backgroundColor: 'white',
+    padding: 10
+  }
 })

@@ -18,6 +18,59 @@ export const Title = ({children, style, ...props}) => {
   )
 }
 
+export const Main = ({
+            children, 
+            fontFamily, 
+            fontSize, 
+            fontWeight,
+            color,
+            textAlign,
+            marginTop,
+            marginBottom,
+            marginLeft,
+            marginRight,
+            marginHorizontal,
+            marginVertical,
+            paddingTop,
+            paddingLeft,
+            paddingRight,
+            paddingBottom,
+            paddingHorizontal,
+            paddingVertical, 
+            numberOfLines = 1,
+            flex,
+            fontStyle,
+            onTextLayout}) => {
+  return(
+    <Text style={{ 
+      fontFamily : fontFamily || font.secondary, 
+      fontSize : fontSize || 14,
+      color : color || 'black', 
+      fontWeight,
+      textAlign,
+      marginTop,
+      marginBottom,
+      marginLeft,
+      marginRight,
+      marginHorizontal,
+      marginVertical,
+      paddingTop,
+      paddingLeft,
+      paddingRight,
+      paddingBottom,
+      paddingHorizontal,
+      paddingVertical,
+      fontStyle,
+      flex
+      }} 
+      numberOfLines={ numberOfLines }
+      {... onTextLayout ? onTextLayout={onTextLayout} : {}}>
+      {children}
+    </Text>
+  )
+}
+
+
 const styles = StyleSheet.create({
   primary: {
     fontFamily: font.primary,
@@ -30,5 +83,10 @@ const styles = StyleSheet.create({
     color: color.black,
     fontSize: 16,
     fontWeight: 'normal'
+  },
+  regular: {
+    fontFamily: font.secondary,
+    color: 'black',
+    fontSize: 13
   },
 })

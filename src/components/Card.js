@@ -1,5 +1,5 @@
 import React, { memo } from 'react'
-import { Dimensions, Image, StyleSheet, Text, TouchableNativeFeedback, View } from 'react-native'
+import { Dimensions, Image, StyleSheet, Text, TouchableNativeFeedback, TouchableOpacity, View } from 'react-native'
 import { Avatar } from 'react-native-elements';
 import { ParallaxImage } from 'react-native-snap-carousel';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
@@ -66,27 +66,38 @@ export const Home = ({ item, type, onPress, ...props }) => {
   )
 }
 
-export const Design = memo(({ item, index }) => {
+export const Design = memo(({ item, index, navigation, type, onUnlikedImage }) => {
   // console.log(index)
   const imageSource = item.professional_image ?
     { uri: item.professional_image } : profile
 
   return (
-    <View style={styles.designItemContainer}>
-      <Image
-        source={{ uri: item.image_path }}
-        style={styles.designImage} />
-      <View style={{ margin: 10 }}>
-        <TextM.Title>{item.project_name}</TextM.Title>
-        <View style={styles.containerDesigProfName}>
-          <Avatar rounded source={imageSource} containerStyle={styles.avatarContainer} />
-          <TextM.Title
-            style={styles.designProfName}>
-            {item.professional_name}
-          </TextM.Title>
+    <TouchableNativeFeedback onPress={() => navigation.navigate('Design Detail', {id : item.id})}>
+      <View style={styles.designItemContainer}>
+        <View>
+          <Image
+            source={{ uri: item.image_path }}
+            style={styles.designImage} />
+          { type === "Liked Image" && (
+            <TouchableNativeFeedback onPress={()=>onUnlikedImage(item.id, index)}>
+              <View style={styles.heartContainer}>
+                <Icon name='heart' size={18} color={'rgba(255,0,0,1)'} />
+              </View>
+            </TouchableNativeFeedback>
+          )}
         </View>
-      </View>
-    </View>
+        <View style={{ margin: 10 }}>
+          <TextM.Title>{item.project_name}</TextM.Title>
+          <View style={styles.containerDesigProfName}>
+            <Avatar rounded source={imageSource} containerStyle={styles.avatarContainer} />
+            <TextM.Title
+              style={styles.designProfName}>
+              {item.professional_name}
+            </TextM.Title>
+          </View>
+        </View>
+      </View>     
+    </TouchableNativeFeedback>
   )
 })
 
@@ -103,7 +114,8 @@ const styles = StyleSheet.create({
   image: {
     ...StyleSheet.absoluteFillObject,
     resizeMode: 'contain',
-    aspectRatio: 16 / 9
+    aspectRatio: 16 / 9,
+    borderRadius: 8,
   },
   itemProfessional: {
     width: width * 0.83 - 60,
@@ -179,6 +191,17 @@ const styles = StyleSheet.create({
   avatarContainer: {
     width: 20,
     height: 20,
+  },
+  heartContainer : {
+    position: 'absolute',
+    top: 7,
+    right: 7,
+    backgroundColor: 'rgba(0,0,0,.7)',
+    height: width * 0.0729,
+    width: width * 0.0729,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: width * 0.0729
   }
 })
 
@@ -209,11 +232,12 @@ const stylesFilterItem = StyleSheet.create({
   }
 })
 
-export const Professional = memo(({ item, index }) => {
+export const Professional = memo(({ item, index, navigation }) => {
   let rating;
   if (item.total_rating) {
     let [a, b] = item.total_rating.split('.')
-
+    a = parseInt(a), b = parseInt(b)
+    
     if (b <= 2) {
       b = 0
     } else if (b >= 8) {
@@ -222,6 +246,7 @@ export const Professional = memo(({ item, index }) => {
     } else {
       b = 5
     }
+
     let array = [];
     
     for(let i = 0 ; i < a ; i++ ){
@@ -237,32 +262,34 @@ export const Professional = memo(({ item, index }) => {
     )
 
   } else {
-    rating = <Text style={{fontFamily: font.primary, fontSize: 13, fontStyle: 'italic'}}>No Rating</Text>
+    rating = <Text style={{fontFamily: font.primary, fontSize: 13, fontStyle: 'italic', color: 'black'}}>No Rating</Text>
   }
 
   return (
-    <View style={stylesProfessional.container}>
-      <Image
-        source={{ uri: item.thumbnail }}
-        style={stylesProfessional.image}
-      />
-      <View style={stylesProfessional.infoBox}>
-        <View style={stylesProfessional.nameBox}>
-          <Image source={{ uri: item.image_path }} style={stylesProfessional.avatar} />
-          <Text style={stylesProfessional.name} numberOfLines={1}>{item.name}</Text>
-        </View>
-        <View style={stylesProfessional.nameBox}>
-          {rating}
-        </View>
-        <View style={stylesProfessional.nameBox}>
-          <Icon name='map-marker-outline' size={18} style={{marginRight: 5, color: 'black'}} />
-          <Text style={stylesProfessional.address} numberOfLines={1}>{item.city_name}, {item.province_name}</Text>
-        </View>
-        <View>
-          <Text style={stylesProfessional.address}>{item.type_name}</Text>
+    <TouchableNativeFeedback onPress={()=>navigation.navigate('Professional Detail', { id : item.id })}>
+      <View style={stylesProfessional.container}>
+        <Image
+          source={{ uri: item.thumbnail }}
+          style={stylesProfessional.image}
+        />
+        <View style={stylesProfessional.infoBox}>
+          <View style={stylesProfessional.nameBox}>
+            <Image source={{ uri: item.image_path }} style={stylesProfessional.avatar} />
+            <Text style={stylesProfessional.name} numberOfLines={1}>{item.name}</Text>
+          </View>
+          <View style={stylesProfessional.nameBox}>
+            {rating}
+          </View>
+          <View style={stylesProfessional.nameBox}>
+            <Icon name='map-marker-outline' size={18} style={{marginRight: 5, color: 'black'}} />
+            <Text style={stylesProfessional.address} numberOfLines={1}>{item.city_name}, {item.province_name}</Text>
+          </View>
+          <View>
+            <Text style={stylesProfessional.address}>{item.type_name}</Text>
+          </View>
         </View>
       </View>
-    </View>
+    </TouchableNativeFeedback>
   )
 })
 
@@ -292,9 +319,9 @@ const stylesProfessional = StyleSheet.create({
     marginBottom: 9
   },
   avatar: {
-    width: 25,
-    height: 25,
-    borderRadius: 25,
+    width: width * 0.0583,
+    height: width * 0.0583,
+    borderRadius: width * 0.0583,
     marginRight: 8
   },
   name: {
@@ -338,5 +365,33 @@ const style1 = StyleSheet.create({
   itemText:{
     fontFamily: font.secondary,
     fontSize: 14,
+  }
+})
+
+export const Review = memo(({ item, type, index }) => {
+  const stars = Array.from({length : item.rating}, (_, i) => (
+    <Icon name="star" size={18} key={i} color={'#ebb61b'}/>
+  ))
+
+  return (
+    <View style={{...stylesReview.container, ... type === "modal" && { padding : 20 }}}>
+      <TextM.Main marginBottom={5}>{item.username}</TextM.Main>
+        <View style={stylesReview.starContainer}>
+          {stars}
+        </View>
+        <TextM.Main marginTop={15} numberOfLines={0} textAlign={'justify'}>{item.review}</TextM.Main>
+    </View>
+  )
+})
+
+const stylesReview = StyleSheet.create({
+  starContainer: {
+    flexDirection:'row',
+    alignItems: 'center'
+  },
+  container: {
+    borderBottomColor: 'lightgrey',
+    borderBottomWidth: 1,
+    paddingVertical: 15
   }
 })

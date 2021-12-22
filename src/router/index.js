@@ -9,7 +9,10 @@ import {
   Chat,
   Profile,
   Design,
-  Professional
+  Professional,
+  DesignDetail,
+  ProfessionalDetail,
+  LikedImage
 } from '../screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -82,7 +85,7 @@ const Router = ({ state }) => {
           (
             <Stack.Screen name="Splash" component={Splash} options={{ headerShown: false }} />
           )
-          : !state.userToken ?
+          : !state.user ?
             (
               <Stack.Group>
                 <Stack.Screen
@@ -100,6 +103,9 @@ const Router = ({ state }) => {
               <Stack.Group>
                 <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
                 <Stack.Screen name="Catalogue" component={CatalogueTabs} options={{ headerTitle: "Katalog" }} />
+                <Stack.Screen name="Design Detail" component={DesignDetail} />
+                <Stack.Screen name="Professional Detail" component={ProfessionalDetail}/>
+                <Stack.Screen name="Liked Images" component={LikedImage} />
               </Stack.Group>
             )
       }

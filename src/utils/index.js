@@ -3,6 +3,7 @@ import color from "./color";
 import storage from "./storage";
 import api from "./api";
 import { professionalSorting, professionalType } from './constant'
+import { capitalize } from "./lib";
 
 export {
   font, 
@@ -10,5 +11,6 @@ export {
   storage,
   api,
   professionalSorting,
-  professionalType
+  professionalType,
+  capitalize
 }

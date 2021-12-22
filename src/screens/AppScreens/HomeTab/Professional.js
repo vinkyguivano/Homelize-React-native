@@ -16,7 +16,7 @@ import * as NotFound from '../../../components/NotFound'
 import * as Modal from '../../../components/Modal'
 import PrimaryIndicator from '../../../components/ActivityIndicator'
 
-const Professional = ({ route }) => {
+const Professional = ({ route, navigation }) => {
   const [token, setToken] = useState('');
   const [error, setError] = useState('');
   const [filter, setFilter] = useState({
@@ -34,7 +34,7 @@ const Professional = ({ route }) => {
   const [selectedFilter, setSelectedFilter] = useState({
     sort: '',
     city: '',
-    type: ''
+    type: route.params?.tid || ''
   })
   const [tempFilter, setTempFilter] = useState({
     sort: '',
@@ -241,7 +241,7 @@ const Professional = ({ route }) => {
   }
 
   const renderItem = ({ item, index }) => (
-    <Card.Professional item={item} index={index} />
+    <Card.Professional item={item} index={index} navigation={navigation} />
   )
 
   const renderLoading = (
@@ -264,7 +264,7 @@ const Professional = ({ route }) => {
 
   useScrollToTop(flatListRef)
   return (
-    <View>
+    <View style={{flex: 1, backgroundColor: 'white'}}>
       <FlatList
         stickyHeaderHiddenOnScroll={true}
         stickyHeaderIndices={[0]}

@@ -21,7 +21,7 @@ const Home = ({ navigation }) => {
       },
       {
         imgSource: banner2,
-        destination: 'Profile'
+        destination: 'Professional'
       }
     ]
   })
@@ -86,7 +86,12 @@ const Home = ({ navigation }) => {
     return (
       <Card.Home
         item={item}
-        onPress={() => alert('helloo')}
+        onPress={() => {
+          navigation.navigate("Catalogue", {
+            screen: "Professional",
+            params: {tid: item.id}
+          })
+        }}
         type="Professional"
         {...parallaxProps}
       />
@@ -116,7 +121,7 @@ const Home = ({ navigation }) => {
               <HText.Primary style={styles.welcomeText}>Selamat Datang,</HText.Primary>
               <Text style={styles.username}>{user.name}</Text>
             </View>
-            <TouchableOpacity onPress={()=> alert('Hello')}>
+            <TouchableOpacity onPress={()=> navigation.navigate('Liked Images')}>
               <MaterialIcons name="heart-outline" size={18} color={'#ffffff'} style={styles.icon}/>
             </TouchableOpacity>
           </View>
@@ -174,13 +179,15 @@ const height = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    backgroundColor: 'white'
   },
   headerContainer: {
     paddingHorizontal: 30,
     paddingTop: 20,
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   welcomeText: {
     fontFamily: font.primary,
