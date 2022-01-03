@@ -7,6 +7,7 @@ import { color, font } from '../utils';
 import * as TextM from './Text'
 import { profile } from '../assets/index'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import { rupiahFormat } from '../utils';
 
 const { width, height } = Dimensions.get('window')
 
@@ -393,5 +394,62 @@ const stylesReview = StyleSheet.create({
     borderBottomColor: 'lightgrey',
     borderBottomWidth: 1,
     paddingVertical: 15
+  }
+})
+
+export const Package = ({ item, onPress, selectedPaket }) => {
+  return (
+    <>
+      <View style={{...stylesPackage.container, ... selectedPaket.id === item.id && {borderColor: color.primary, borderWidth: 1.5 }}}>
+        <View style={{padding: 20}}>
+          <TextM.Main fontSize={16} marginBottom={5}>{item.name.toUpperCase()}</TextM.Main>
+          <TextM.Main numberOfLines={0} lineHeight={23} marginBottom={10}>
+            {item.desc}
+          </TextM.Main>
+          <TextM.Main fontSize={16}>Rp {rupiahFormat(item.price)} / m²</TextM.Main>
+        </View>
+        <TouchableNativeFeedback onPress={() => onPress(item)}>
+          <View style={stylesPackage.buttonContainer}>
+            <Text style={stylesPackage.selectText}>Pilih</Text>
+          </View>
+        </TouchableNativeFeedback>
+        {
+          selectedPaket.id === item.id && (
+            <View style={stylesPackage.iconContainer}>
+              <Icon name="checkbox-marked-circle-outline" size={25} color={color.primary}/>
+            </View>
+          )
+        }
+      </View>
+    </>
+  )
+}
+
+const stylesPackage = StyleSheet.create({
+  container:{
+    borderRadius: 10,
+    elevation: 8,
+    backgroundColor: 'white',
+    marginTop: 15,
+    width: width * 0.7299,
+    borderWidth: 1,
+    borderColor: 'lightgrey',
+  },
+  buttonContainer: {
+    borderColor: 'lightgrey',
+    borderTopWidth: 1,
+    paddingVertical: 10
+  },
+  selectText: {
+    fontSize: 14,
+    color: color.primary,
+    textAlign: 'center',
+    fontFamily: font.secondary,
+    fontWeight: 'bold'
+  },
+  iconContainer: {
+    position: 'absolute',
+    right: 20,
+    top: 20
   }
 })

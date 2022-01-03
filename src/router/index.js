@@ -12,13 +12,15 @@ import {
   Professional,
   DesignDetail,
   ProfessionalDetail,
-  LikedImage
+  LikedImage,
+  ArchitectServiceOrder,
+  InteriorServiceOrder
 } from '../screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { color, font } from '../utils';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Dimensions } from 'react-native';
+import { Dimensions, Text, View } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -100,12 +102,22 @@ const Router = ({ state }) => {
             )
             :
             (
-              <Stack.Group>
+              <Stack.Group
+                screenOptions={({navigation, route}) => ({
+                  headerTitleStyle: {
+                    fontFamily: font.secondary,
+                    fontSize: 18,
+                    fontWeight: '700'
+                  },
+                  headerTintColor: '#555555'
+                })}>
                 <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
                 <Stack.Screen name="Catalogue" component={CatalogueTabs} options={{ headerTitle: "Katalog" }} />
                 <Stack.Screen name="Design Detail" component={DesignDetail} />
                 <Stack.Screen name="Professional Detail" component={ProfessionalDetail}/>
                 <Stack.Screen name="Liked Images" component={LikedImage} />
+                <Stack.Screen name="Architecture Order" component={ArchitectServiceOrder}/>
+                <Stack.Screen name="Interior Design Order" component={InteriorServiceOrder}/>
               </Stack.Group>
             )
       }

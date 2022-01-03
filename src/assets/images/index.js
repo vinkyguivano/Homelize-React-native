@@ -5,6 +5,8 @@ import architect from './architect.jpg'
 import interior from './interior.jpg'
 import profile from './profile.png'
 import notFound from './no-results.png'
+import architectPNG from './architect.png'
+import graphicDesigner from './graphic-designer.png'
 
 export {
   backgroundPrimary,
@@ -13,5 +15,7 @@ export {
   architect,
   interior,
   profile,
-  notFound
+  notFound,
+  architectPNG,
+  graphicDesigner
 }

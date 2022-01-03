@@ -2,8 +2,8 @@ import font from "./font";
 import color from "./color";
 import storage from "./storage";
 import api from "./api";
-import { professionalSorting, professionalType } from './constant'
-import { capitalize } from "./lib";
+import { professionalSorting, professionalType, homeArchitecturePackage } from './constant'
+import { capitalize, rupiahFormat } from "./lib";
 
 export {
   font, 
@@ -12,5 +12,7 @@ export {
   api,
   professionalSorting,
   professionalType,
-  capitalize
+  homeArchitecturePackage,
+  capitalize,
+  rupiahFormat
 }

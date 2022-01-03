@@ -40,7 +40,9 @@ export const Main = ({
             numberOfLines = 1,
             flex,
             fontStyle,
-            onTextLayout}) => {
+            onTextLayout, 
+            lineHeight,
+            style}) => {
   return(
     <Text style={{ 
       fontFamily : fontFamily || font.secondary, 
@@ -61,7 +63,9 @@ export const Main = ({
       paddingHorizontal,
       paddingVertical,
       fontStyle,
-      flex
+      flex,
+      lineHeight,
+      ...style
       }} 
       numberOfLines={ numberOfLines }
       {... onTextLayout ? onTextLayout={onTextLayout} : {}}>

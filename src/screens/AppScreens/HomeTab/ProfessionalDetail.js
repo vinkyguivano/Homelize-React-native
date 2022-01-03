@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext, useCallback, useRef } from 'react'
-import { Dimensions, Image, ScrollView, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View } from 'react-native'
+import { Dimensions, Image, RefreshControl, ScrollView, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View } from 'react-native'
 import * as Container from '../../../components/Container'
 import * as Modal from '../../../components/Modal'
 import * as Card from '../../../components/Card'
+import * as Button from '../../../components/Button'
 import { Main as Text } from '../../../components/Text'
 import Loading from '../../../components/Loading'
 import AuthContext from '../../../context/AuthContext'
@@ -17,7 +18,7 @@ const ProfessionalDetail = ({ route, navigation }) => {
   const { user } = useContext(AuthContext)
   const [professional, setProfessional] = useState('')
   const [loading, setLoading] = useState(true)
-  const [refresh, setRefresh] = useState('')
+  const [refresh, setRefresh] = useState(false)
   const [error, setError] = useState('')
   const [showMore, setShowMore] = useState(null)
   const [openMore, setOpenMore] = useState(false)
@@ -27,6 +28,7 @@ const ProfessionalDetail = ({ route, navigation }) => {
   const professionalId = route.params?.id
   const projectModalRef = useRef(null)
   const reviewModalRef = useRef(null)
+  const [isModalVisible, setModalVisible] = useState(false)
 
   const fetchProfessional = async () => {
     try {
@@ -85,6 +87,13 @@ const ProfessionalDetail = ({ route, navigation }) => {
     }
   }, [error])
 
+  const onRefresh = async () => {
+    setRefresh(true)
+    await fetchProfessional()
+    await fetchReview(true)
+    setRefresh(false)
+  }
+
   const onTextLayout = useCallback((e) => {
     if (showMore === null) {
       setShowMore(e.nativeEvent.lines.length > 5)
@@ -98,6 +107,17 @@ const ProfessionalDetail = ({ route, navigation }) => {
       projectModalRef.current.open()
     } catch (e) {
       setError(`${e}`)
+    }
+  }
+
+  const onPressOrder = async () => {
+    const professionalType = professional.type_id
+    if(professionalType === 2){
+      navigation.navigate('Interior Design Order', { pid : professionalId })
+    }else if(professionalType === 1){
+      navigation.navigate('Architecture Order', { pid: professionalId })
+    }else{
+      setModalVisible(true)
     }
   }
 
@@ -127,7 +147,12 @@ const ProfessionalDetail = ({ route, navigation }) => {
 
   return (
     <Container.Main>
-      <ScrollView>
+      <ScrollView 
+        refreshControl={
+          <RefreshControl 
+            refreshing={refresh}
+            onRefresh={onRefresh}/>
+        }>
         <Image
           source={{ uri: professional.cover_pic }}
           style={styles.coverPic} />
@@ -204,17 +229,27 @@ const ProfessionalDetail = ({ route, navigation }) => {
                     {
                       reviews.length > 6
                       && <TouchableOpacity onPress={() => reviewModalRef.current.open()}> 
-                          <Text color={color.primary} fontWeight={'bold'} fontSize={13} marginTop={15}>
+                          <Text color={color.primary} fontWeight={'bold'} fontSize={13} marginVertical={15}>
                             Lihat semua review
                           </Text>
                       </TouchableOpacity>
                     }
                   </View> :
-                  <Text marginTop={15}>Belum ada review</Text>
+                  <Text marginVertical={15}>Belum ada review</Text>
               }
             </View>
         </View>
       </ScrollView>
+      <View style={styles.buttonContainer}>
+        <Button.PrimaryButton
+          title={"Pesan Sekarang"}
+          onPress={onPressOrder} />
+      </View>
+      <Modal.ChooseService
+        isModalVisible={isModalVisible}
+        toggleModal={() => setModalVisible(!isModalVisible)} 
+        navigation={navigation}
+        professionalId={professionalId}/>
       <Portal>
         <Modal.Project
           ref={projectModalRef}
@@ -272,5 +307,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     flexWrap: 'wrap'
+  },
+  buttonContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    marginTop: 'auto',
+    backgroundColor: 'white',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.32,
+    shadowRadius: 5.46,
+    elevation: 9,
   }
 })
