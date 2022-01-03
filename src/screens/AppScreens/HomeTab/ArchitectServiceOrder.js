@@ -229,6 +229,7 @@ const ArchitectServiceOrder = ({ route, navigation }) => {
             onSubmit={values => console.log(values)}>
             {({ handleChange, handleBlur, handleSubmit, values, errors, touched, ...props }) => (
               <View>
+                <Text.Main fontWeight={'bold'} fontSize={16} marginBottom={20}>Informasi Pribadi</Text.Main>
                 <TextField.Form
                   label="Nama"
                   value={values.name}
@@ -244,6 +245,7 @@ const ArchitectServiceOrder = ({ route, navigation }) => {
                   error={touched.phoneNumber && errors.phoneNumber}
                   keyboardType="numeric"
                 />
+                 <Text.Main fontWeight={'bold'} fontSize={16} marginBottom={20}>Detail Rumah</Text.Main>
                 <View>
                   <TextField.Form
                     label="Jenis Desain"

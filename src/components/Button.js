@@ -37,7 +37,7 @@ const PrimaryButton = ({
                 marginLeft,
                 marginBottom,
                 marginHorizontal,
-                marginVetical,
+                marginVertical,
                 padding,
                 paddingHorizontal,
                 paddingVertical,
@@ -58,7 +58,7 @@ const PrimaryButton = ({
       marginLeft,
       marginBottom,
       marginHorizontal,
-      marginVetical,
+      marginVertical,
       padding,
       paddingHorizontal,
       paddingVertical
