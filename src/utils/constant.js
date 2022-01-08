@@ -61,9 +61,18 @@ const transferSteps = {
 6. Kemudian kamu akan melihat menu konfirmasi nomor rekening penerima. Setelah itu kamu diminta memasukkan Personal Identification Number (PIN) BCA, pastikan tidak salah dalam memasukkan PIN`)
 }
 
+const orderStatus = [
+  { id: 1, label: 'Menunggu Pembayaran'},
+  { id: 2, label: 'Menunggu Konfirmasi Pembayaran'},
+  { id: 3, label: 'Proses Pengerjaan'},
+  { id: 4, label: 'Selesai'},
+  { id: 5, label: 'Batal'}
+]
+
 export {
   professionalType,
   professionalSorting,
   homeArchitecturePackage,
-  transferSteps
+  transferSteps,
+  orderStatus
 }

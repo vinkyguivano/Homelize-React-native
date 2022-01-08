@@ -6,7 +6,7 @@ const capitalize = (word) => {
      item.charAt(0).toUpperCase() + item.slice(1)
     ))
     
-    return capitalize.join('')
+    return capitalize.join(' ')
   }
   return word
 }

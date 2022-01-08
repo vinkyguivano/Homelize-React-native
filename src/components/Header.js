@@ -4,6 +4,8 @@ import { color, font } from '../utils'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { Badge } from 'react-native-elements'
 
+const { width, height } = Dimensions.get('window')
+
 export const Primary = memo(({ placeholder, onChangeText, value, onSubmit, onOpenFilter, filterCount }) => {
   return (
     <View style={styles.headerContainer}>
@@ -36,8 +38,6 @@ export const Primary = memo(({ placeholder, onChangeText, value, onSubmit, onOpe
     </View>
   )
 })
-
-const { width, height } = Dimensions.get('window')
 
 const styles = StyleSheet.create({
   headerContainer: {
@@ -77,5 +77,35 @@ const styles = StyleSheet.create({
     fontFamily: font.primary,
     fontWeight: 'bold',
     fontSize: 13
+  }
+})
+
+export const Order = ({openFilter}) => {
+  return(
+    <View style={styles2.container}>
+      <Text style={styles2.title}>Daftar Order</Text>
+      <TouchableNativeFeedback onPress={openFilter}>
+        <View>
+          <Icon name="filter" size={25} color={'white'}/>
+        </View>
+      </TouchableNativeFeedback>
+    </View>
+  )
+}
+
+const styles2= StyleSheet.create({
+  container: {
+    backgroundColor: color.primary,
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    paddingVertical: 18,
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  title: {
+    color: 'white',
+    fontSize: 17,
+    fontWeight: 'bold',
+    flex: 1
   }
 })

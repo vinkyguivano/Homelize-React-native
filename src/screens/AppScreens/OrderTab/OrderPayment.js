@@ -12,6 +12,7 @@ import { api, color, rupiahFormat, transferSteps } from '../../../utils'
 import moment from 'moment'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import Clipboard from '@react-native-clipboard/clipboard';
+import 'moment/locale/id' 
 
 const OrderPayment = ({ navigation, route }) => {
   const orderId = route.params?.oid
@@ -178,7 +179,7 @@ const OrderPayment = ({ navigation, route }) => {
                   {data.orderType?.name} oleh {data.profName}
                 </Text.Main>
                 <Text.Main fontSize={14} lineHeight={22}>
-                  {moment(data.create_at).format('DD MMM YYYY')}
+                  {moment(data.create_at).locale('id').format('ddd, DD MMM YYYY')}
                 </Text.Main>
               </View>
               <TouchableOpacity onPress={() => setShowDetail(!showDetail)}>

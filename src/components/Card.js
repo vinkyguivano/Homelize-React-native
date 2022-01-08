@@ -3,11 +3,14 @@ import { Dimensions, Image, StyleSheet, Text, TouchableNativeFeedback, Touchable
 import { Avatar } from 'react-native-elements';
 import { ParallaxImage } from 'react-native-snap-carousel';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
-import { color, font } from '../utils';
+import { capitalize, color, font } from '../utils';
 import * as TextM from './Text'
 import { profile } from '../assets/index'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { rupiahFormat } from '../utils';
+import { ExteIcon, InteriorIcon } from '../assets/icons';
+import moment from 'moment';
+import 'moment/locale/id' 
 
 const { width, height } = Dimensions.get('window')
 
@@ -451,5 +454,56 @@ const stylesPackage = StyleSheet.create({
     position: 'absolute',
     right: 20,
     top: 20
+  }
+})
+
+export const Order = memo(({item, onSelectItem}) => {
+  const icon = item.order_type_id === 1 ? 
+               ExteIcon :  InteriorIcon
+  return(
+    <TouchableNativeFeedback onPress={() => onSelectItem(item)}>
+      <View style={styleOrder.container}>
+        <View style={styleOrder.topContainer}>
+          <View style={{flex: 1}}>
+            <View style={styleOrder.topContainer}>
+              <Image source={icon} style={styleOrder.icon}/>
+              <View style={{flex: 1}}>
+                <TextM.Main fontWeight={'bold'} marginBottom={4}>Order {item.order_type}</TextM.Main>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Icon name='account-outline' size={20} style={{marginRight: 6}}/>
+                  <TextM.Main flex={1}>{item.professional_name}</TextM.Main>
+                </View>
+              </View>
+            </View>
+            <TextM.Main marginTop={8}>
+              {moment(item.created_at).locale('id').format('ddd, DD MMM YYYY')}
+            </TextM.Main>
+            <TextM.Main marginTop={8}>
+              Status : {capitalize(item.status.toLowerCase())}
+            </TextM.Main>
+          </View>
+          <View>
+            <Icon name='chevron-right' size={20} color={'black'}/>
+          </View>
+        </View>
+      </View>
+    </TouchableNativeFeedback>
+  )
+})
+
+const styleOrder = StyleSheet.create({
+  container: {
+    padding: 20,
+    borderBottomColor: 'lightgrey',
+    borderBottomWidth: 1,
+  },
+  topContainer: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  icon: {
+    width: width * (50 / width),
+    height: width * ( 50 / width),
+    marginRight: 10
   }
 })
