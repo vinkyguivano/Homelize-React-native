@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useLayoutEffect, useRef } from 'react'
-import { Dimensions, StyleSheet, View, BackHandler, TouchableNativeFeedback, Keyboard, Image, TouchableOpacity } from 'react-native'
+import { Dimensions, StyleSheet, View, BackHandler, TouchableNativeFeedback, Keyboard, Image, TouchableOpacity, Platform } from 'react-native'
 import AuthContext from '../../../context/AuthContext'
 import * as Container from '../../../components/Container'
 import * as Text from '../../../components/Text'
@@ -46,7 +46,7 @@ const InteriorServiceOrder = ({ navigation, route }) => {
         setLoading(true)
         const { data } = await api.get('design/filters', user.token)
         setDesignOption(data.designs)
-        data.rooms.splice(7, 3)
+        data.rooms.splice(7, 1)
         data.rooms.forEach(item => {
           const arr = item.name.toLowerCase().split(' ')
           for (let i = 1; i < arr.length; i++) {
@@ -222,6 +222,73 @@ const InteriorServiceOrder = ({ navigation, route }) => {
     )
   })
 
+  const handleOnSubmit = async(values, setSubmitting) => {
+    const { name, phoneNumber } = values
+    const mapping_rooms = roomList.map((item) => ({
+      room_id : item.type.id,
+      style_id : item.style.id,
+      room_area : parseInt(item.area),
+      room_width: parseInt(item.width),
+      room_length: parseInt(item.length),
+      note: item.note
+    }))
+    const body = {
+      data: {
+        professional_id : route.params.pid,
+        name: name,
+        phone_number: phoneNumber,
+        price: getTotalPrice(),
+        type_id : 2
+      },
+      mapping_rooms: mapping_rooms
+    }
+
+    try{
+      const { data } = await api.post('orders', user.token, body, { type: 2})
+      const orderId = data.order.id, mapIds= data.map_ids
+      console.log(orderId, mapIds)
+      const promises = []
+      mapIds.forEach((item, idx) => {
+        if(roomList[idx].photos.length > 0){
+          const promise = new Promise((res, rej) => {
+            const data = new FormData()
+            roomList[idx].photos.forEach(item => {
+              data.append('images[]', {
+                name: item.photo.fileName,
+                type: item.photo.type,
+                uri: Platform.OS === 'ios' ?
+                  item.photo.uri.replace('file://', '')
+                  : item.photo.uri,
+              })
+              data.append('descriptions[]', item.description)
+            })
+
+            api.post(`orders/${item}/images`, user.token, data, { type: 2}, {
+              "Content-Type" : "multipart/form-data"
+            }).then((res1) => res(res1.data))
+            .catch((e) => {
+              console.log(e.response.data)
+              rej(e.response.data)
+            })
+          }).catch(e => e)
+
+          promises.push(promise)
+        }
+      })
+
+      if(promises.length > 0 ){
+        await Promise.all(promises)
+        console.log("images have been uploaded")
+      }
+
+      navigation.replace('Order Payment', { oid: orderId })
+    }catch(error){
+      console.log(error.response.data)
+      setError(`${error}`)
+      setSubmitting(false)
+    }
+  }
+
   if (loading) return <Loading />
 
   return (
@@ -239,9 +306,8 @@ const InteriorServiceOrder = ({ navigation, route }) => {
               phoneNumber: ''
             }}
             validationSchema={orderValidation}
-            onSubmit={(value, action) => {
-              console.log(value)
-              action.resetForm()
+            onSubmit={(values, { setSubmitting }) => {
+              handleOnSubmit(values, setSubmitting)
             }}>
             {
               ({ handleChange, handleBlur, errors, touched, values, handleSubmit, ...props }) => (
@@ -305,6 +371,8 @@ const InteriorServiceOrder = ({ navigation, route }) => {
                     </View>
                   )
                 }
+                <Modal.Loading1 
+                  isVisible={props.isSubmitting}/>
                 </View>
               )
             }
@@ -378,7 +446,7 @@ const InteriorServiceOrder = ({ navigation, route }) => {
                       dropdown
                       onDropdownPress={() => setModal({ visible: true, type: 'roomStyle' })}
                     />
-                    <Modal.SelectDesign
+                    <Modal.Primary
                       isVisible={modal.visible}
                       toggleModal={() => setModal(curr => ({ ...curr, visible: false }))}
                       designList={modal.type === 'roomType' ? roomOption : designOption}
@@ -390,7 +458,8 @@ const InteriorServiceOrder = ({ navigation, route }) => {
                       onBlur={() => {
                         const type = modal.type === 'roomType' ? 'roomType' : 'roomStyle'
                         props.setFieldTouched(type, true)
-                      }} />
+                      }} 
+                      label={modal.type === 'roomType' ? 'Kategori Ruangan' : 'Style Ruangan'}/>
                   </View>
                   <View>
                     <Text.Main fontSize={15} marginBottom={15} >Ukuran Ruangan</Text.Main>

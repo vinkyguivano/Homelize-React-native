@@ -12,6 +12,8 @@ import ProfessionalDetail from "./AppScreens/HomeTab/ProfessionalDetail";
 import LikedImage from "./AppScreens/HomeTab/LikedImage";
 import ArchitectServiceOrder from './AppScreens/HomeTab/ArchitectServiceOrder';
 import InteriorServiceOrder from './AppScreens/HomeTab/InteriorServiceOrder';
+import OrderDetail from "./AppScreens/OrderTab/OrderDetail";
+import OrderPayment from "./AppScreens/OrderTab/OrderPayment";
 
 export {
   Login, 
@@ -27,5 +29,7 @@ export {
   LikedImage,
   ProfessionalDetail,
   ArchitectServiceOrder,
-  InteriorServiceOrder
+  InteriorServiceOrder,
+  OrderDetail,
+  OrderPayment
 }

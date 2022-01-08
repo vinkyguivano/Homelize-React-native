@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useLayoutEffect, useRef } from 'react'
-import { Dimensions, StyleSheet, View, BackHandler, TouchableNativeFeedback, Keyboard, Image, TouchableOpacity } from 'react-native'
+import { Dimensions, StyleSheet, View, BackHandler, TouchableNativeFeedback, Keyboard, Image, TouchableOpacity, Platform } from 'react-native'
 import * as Container from '../../../components/Container'
 import * as Text from '../../../components/Text'
 import * as Card from '../../../components/Card'
@@ -89,6 +89,7 @@ const ArchitectServiceOrder = ({ route, navigation }) => {
         message: error,
         type: 'danger'
       })
+      setError('')
     }
   }, [error])
 
@@ -133,7 +134,7 @@ const ArchitectServiceOrder = ({ route, navigation }) => {
       .matches(/^\d+$/, 'hanya boleh diisi angka')
       .required('Luas bangunan harus diisi'),
     budgetEstimation: Yup.string().trim()
-      .matches(/^\d+$/, 'hanya boleh diisi angka')
+      .matches(/^[.\d]+$/, 'hanya boleh diisi angka')
       .required('estimasi budget harus diisi'),
     floorCount: Yup.string().trim()
       .matches(/^\d+$/, 'hanya boleh diisi angka')
@@ -183,9 +184,69 @@ const ArchitectServiceOrder = ({ route, navigation }) => {
         </TouchableOpacity>
       </View>
     )
-
   })
 
+  const handleSubmit = async (values, setSubmitting) => {
+    const { name, phoneNumber, designType, landWidth, landLength, buildingArea, budgetEstimation, floorCount, other} = values
+    const mapping_rooms = roomList.filter((item) => {
+      if(parseInt(values[`${item.var}`]) > 0) return true
+    }).map(item => ({
+        room_id : item.id,
+        quantity: parseInt(values[`${item.var}`])
+    }))
+
+    const body = {
+      "data" : {
+        professional_id : route.params.pid,
+        name,
+        phone_number: phoneNumber,
+        price: paket.price * buildingArea,
+        type_id : 1
+      },
+      "detail" : {
+        style_id : designType.id,
+        land_width: parseInt(landWidth),
+        land_length: parseInt(landLength),
+        building_area: parseInt(buildingArea),
+        budget_estimation: budgetEstimation.replace('.', ''),
+        floor_count: parseInt(floorCount),
+        note: other,
+        package_Id: paket.id
+      },
+      "mapping_rooms": mapping_rooms
+    }
+
+    console.log('body', body)
+
+    try{
+      const { data : { order }} = await api.post('orders', user.token, body, { type: 1})
+      if(photos.length > 0){
+        const data = new FormData()
+        photos.forEach(item => {
+          data.append('images[]', {
+            name: item.photo.fileName,
+            type: item.photo.type,
+            uri: Platform.OS === 'ios' ?
+              item.photo.uri.replace('file://', '')
+              : item.photo.uri,
+          })
+          data.append('descriptions[]', item.description)
+        })
+
+        await api.post(`orders/${order.id}/images`, user.token, data, { type: 1 } , {
+          "Content-Type" : "multipart/form-data"
+        })
+      }
+      navigation.replace('Order Payment', { oid: order.id })
+    } catch(error){
+      console.log(error.response.data)
+      setError(`${error}`)
+      setSubmitting(false)
+    }
+  }
+
+  {console.log(route.params?.pid)}
+  
   if (loading) {
     return <Loading />
   }
@@ -195,8 +256,9 @@ const ArchitectServiceOrder = ({ route, navigation }) => {
       <KeyboardAwareScrollView
         ref={scrollViewRef}
         showsVerticalScrollIndicator={false}
-        enableAutomaticScroll={true}
-        enableOnAndroid={true}>
+        // enableAutomaticScroll={true}
+        // enableOnAndroid={true}
+        >
         {/* choosePackage */}
         <View style={{ ...styles.container, ...choosePackage && { display: 'flex' } }}>
           <Text.Main textAlign={'center'} fontSize={18}>Pilih Paket</Text.Main>
@@ -226,7 +288,7 @@ const ArchitectServiceOrder = ({ route, navigation }) => {
               other: ''
             }}
             validationSchema={validationSchema}
-            onSubmit={values => console.log(values)}>
+            onSubmit={(values, { setSubmitting }) => handleSubmit(values, setSubmitting) }>
             {({ handleChange, handleBlur, handleSubmit, values, errors, touched, ...props }) => (
               <View>
                 <Text.Main fontWeight={'bold'} fontSize={16} marginBottom={20}>Informasi Pribadi</Text.Main>
@@ -255,7 +317,7 @@ const ArchitectServiceOrder = ({ route, navigation }) => {
                     dropdown
                     onDropdownPress={() => setModalVisible(true)}
                   />
-                  <Modal.SelectDesign
+                  <Modal.Primary
                     isVisible={isModalVisible}
                     toggleModal={() => setModalVisible(!isModalVisible)}
                     designList={designStyles}
@@ -266,6 +328,7 @@ const ArchitectServiceOrder = ({ route, navigation }) => {
                     onBlur={() => {
                       props.setFieldTouched('designType', true)
                     }}
+                    label={'Jenis Desain'}
                   />
                 </View>
                 <View>
@@ -376,6 +439,8 @@ const ArchitectServiceOrder = ({ route, navigation }) => {
                   marginTop={25}
                   height={40}
                 />
+                <Modal.Loading1 
+                  isVisible={props.isSubmitting}/>
               </View>
             )}
           </Formik>

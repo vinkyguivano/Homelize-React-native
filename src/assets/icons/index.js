@@ -6,6 +6,9 @@ import ChatIcon from './chat.svg'
 import HomeIcon from './home.svg'
 import NoteIcon from './note.svg'
 import UserIcon from './user.svg'
+import InteriorIcon from './interior.png'
+import ExteIcon from './arsitektur.png'
+import BCAIcon from './bca.png'
 
 export { 
   FacebookIcon, 
@@ -15,5 +18,8 @@ export {
   ChatIcon,
   HomeIcon,
   NoteIcon,
-  UserIcon 
+  UserIcon,
+  InteriorIcon,
+  ExteIcon,
+  BCAIcon
 }

@@ -11,7 +11,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import ActivityIndicator from './ActivityIndicator'
 import Loading from '../components/Loading'
 import { graphicDesigner, architectPNG } from '../assets'
-import { launchImageLibrary } from 'react-native-image-picker'
+import { launchImageLibrary, launchCamera } from 'react-native-image-picker'
 
 const { width, height } = Dimensions.get('window');
 
@@ -653,7 +653,7 @@ const stylesChooseService = StyleSheet.create({
   }
 })
 
-export const SelectDesign = ({ isVisible, toggleModal, designList, selectedDesign, onChange, onBlur }) => {
+export const Primary = ({ isVisible, toggleModal, designList, selectedDesign, onChange, onBlur, label }) => {
   const [style, setStyle] = useState(selectedDesign)
 
   useEffect(() => {
@@ -693,7 +693,7 @@ export const SelectDesign = ({ isVisible, toggleModal, designList, selectedDesig
       }}>
       <View style={selectDesignStyles.container}>
         <View style={selectDesignStyles.headerWrapper}>
-          <MText.Main fontSize={16} fontWeight={'bold'}>Jenis Desain</MText.Main>
+          <MText.Main fontSize={16} fontWeight={'bold'}>{label}</MText.Main>
           <TouchableOpacity onPress={handleClose}>
             <Icon name="close" size={25} color={'black'} />
           </TouchableOpacity>
@@ -864,5 +864,93 @@ const addPhotoStyles = StyleSheet.create({
     padding: 0,
     fontSize: 14,
     fontFamily: font.secondary
+  }
+})
+
+export const Loading1 = ({ isVisible }) => {
+  return(
+    <Modal
+      isVisible={isVisible}
+      style={{margin: 0}}
+      animationIn={'fadeIn'}
+      animationOut={'fadeOut'}>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <ActivityIndicator />
+        </View>
+    </Modal>
+  )
+}
+
+export const SelectGalleryOrCamera = ({ isVisible, toggleModal, selectImage }) => {
+  const options = {
+    mediaType: 'photo',
+    quality: 1,
+  }
+  const handleLaunchCamera = async () => {
+    launchCamera(options , (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker')
+      } else if (response.errorCode) {
+        console.log('Error ' + response.errorCode)
+      } else {
+        selectImage(response.assets[0])
+        toggleModal()
+      }
+    })
+  }
+
+  const handleLauchGallery = () => {
+    launchImageLibrary(options , (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker')
+      } else if (response.errorCode) {
+        console.log('Error ' + response.errorCode)
+      } else {
+        selectImage(response.assets[0])
+        toggleModal()
+      }
+    })
+  }
+
+  return(
+    <Modal
+      isVisible={isVisible}
+      onBackdropPress={toggleModal}
+      onBackButtonPress={toggleModal}
+      animationIn={'fadeIn'}
+      animationOut={'fadeOut'}
+      style={{
+        margin: 0,
+        alignItems: 'center'
+      }}>
+        <View style={styleSelectGalleryorCamera.container}>
+          <TouchableOpacity activeOpacity={1} onPress={handleLaunchCamera}>
+            <View style={styleSelectGalleryorCamera.itemWrapper}>
+              <Icon name='camera' size={23} style={{marginRight: 7}}/>
+              <MText.Main>Ambil Foto</MText.Main>
+            </View>
+          </TouchableOpacity>
+          <View style={{height: 1, backgroundColor: 'lightgrey'}}/>
+          <TouchableOpacity activeOpacity={1} onPress={handleLauchGallery}>
+            <View style={styleSelectGalleryorCamera.itemWrapper}>
+              <Icon name='image-size-select-actual' size={23} style={{marginRight: 7}}/>
+              <MText.Main>Pilih dari Galeri</MText.Main>
+            </View>
+          </TouchableOpacity>
+        </View>
+    </Modal>
+  )
+}
+
+const styleSelectGalleryorCamera = StyleSheet.create({
+  container: {
+    width: width * ( 250 / width ),
+    backgroundColor: 'white',
+    padding: 9
+  },
+  itemWrapper: {
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center'
   }
 })

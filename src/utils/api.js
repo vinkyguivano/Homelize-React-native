@@ -14,7 +14,7 @@ const api = {
     })
   },
 
-  post:  (url, token = "", body , params = {}) => {
+  post:  (url, token = "", body , params = {}, headers = {}) => {
     return axios.post(`http://127.0.0.1:8000/api/${url}`, body, {
       params: {
         ...params
@@ -22,7 +22,8 @@ const api = {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        ...(token ? { 'Authorization' : `Bearer ${token}` } : {})
+        ...(token ? { 'Authorization' : `Bearer ${token}` } : {}),
+        ...headers
       }
     })
   },

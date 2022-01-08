@@ -14,7 +14,9 @@ import {
   ProfessionalDetail,
   LikedImage,
   ArchitectServiceOrder,
-  InteriorServiceOrder
+  InteriorServiceOrder,
+  OrderDetail,
+  OrderPayment
 } from '../screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -118,6 +120,8 @@ const Router = ({ state }) => {
                 <Stack.Screen name="Liked Images" component={LikedImage} />
                 <Stack.Screen name="Architecture Order" component={ArchitectServiceOrder}/>
                 <Stack.Screen name="Interior Design Order" component={InteriorServiceOrder}/>
+                <Stack.Screen name="Order Detail" component={OrderDetail}/>
+                <Stack.Screen name="Order Payment" component={OrderPayment}/>
               </Stack.Group>
             )
       }
