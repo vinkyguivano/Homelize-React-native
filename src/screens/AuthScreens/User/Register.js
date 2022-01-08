@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Keyboard, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { StyleSheet, Text, View, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import {
   GraphRequest,
   GraphRequestManager, LoginManager
@@ -10,33 +10,50 @@ import {
   statusCodes
 } from 'react-native-google-signin'
 
-import { Facebook, Google, PrimaryButton, TextInput } from '../../components';
-import AuthContext from '../../context/AuthContext';
-import { color, font, api } from '../../utils';
+import { Facebook, Google, PrimaryButton, TextInput } from '../../../components';
+import AuthContext from '../../../context/AuthContext';
+import { font, color, api } from '../../../utils';
 
-const Login = ({ navigation }) => {
+const Register = ({ navigation }) => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [disable, setDisable] = useState(true)
   const [errors, setErrors] = useState({
+    name: '',
     email: '',
     password: ''
   })
-  const [errorMsg, setErrorMsg] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  let nameRef, emailRef, passwordRef;
   const { signIn } = React.useContext(AuthContext)
-  let emailRef, passwordRef;
-
   useEffect(() => {
     GoogleSignin.configure({
       webClientId: "786926213150-jc9vhgr8o97sth41fbvii1ttdoo9k31k.apps.googleusercontent.com"
     })
   }, [])
 
+  const onChangeName = () => {
+    let validName = ''
+    if (name.length < 3) {
+      validName = 'Panjang nama minimal 3 karakter'
+    }
+
+    if (validName) {
+      setDisable(true);
+      setErrors((prev) => ({ ...prev, name: validName }))
+    } else {
+      setErrors((prev) => ({ ...prev, name: '' }))
+      setDisable(checkError('name'))
+    }
+  }
+
+
   const onChangeEmail = () => {
     let validEmail = ''
     if (!(/^[\d\w\s.!]+@{1}.+\.{1}.{2,3}$/.test(email))) {
-      validEmail = 'Format email salah'
+      validEmail = 'Format email tidak valid'
     }
     if (email.length === 0) {
       validEmail = 'Email tidak boleh kosong'
@@ -53,8 +70,8 @@ const Login = ({ navigation }) => {
 
   const onChangePassword = async () => {
     let validPassword = ''
-    if (password.length === 0) {
-      validPassword = "Password tidak boleh kosong"
+    if (password.length < 6) {
+      validPassword = "Panjang password minimal 6 karakter "
     }
 
     if (validPassword) {
@@ -73,7 +90,11 @@ const Login = ({ navigation }) => {
   }
 
   const checkError = (field) => {
-    if (!email || !password) {
+    if (!name || !email || !password) {
+      return true;
+    }
+
+    if (field != "name" && errors.name) {
       return true;
     }
 
@@ -88,28 +109,28 @@ const Login = ({ navigation }) => {
     return false;
   }
 
-  const onSubmit = async() => {
+  const onSubmit = async () => {
 
-    setDisable(true)
-
+    setDisable(true);
     const body = {
-      email: email,
-      password: password
+      name,
+      email,
+      password
     }
 
     try {
-      let res = await api.post('login', null, body)
-      res= res.data;
+      let res = await api.post('register', null, body);
+      res = res.data;
       await signIn(res)
-    } catch (error) {
-      let err = error?.response?.data
-      if(err?.message === "Bad credentials"){
-        setErrorMsg('Email dan password tidak sesuai');
-      }else if (err?.message ==="User not found"){
-        setErrorMsg('Email belum terdaftar');
-      }else{
-        setErrorMsg('Gagal login, silahkan coba beberapa saat lagi');
+    }
+    catch (error) {
+      let err = error?.response?.data;
+      if (err?.errors?.email) {
+        setErrorMessage('Email telah terdaftar');
+      } else {
+        setErrorMessage('Registrasi gagal, silahkan coba beberapa saat lagi');
       }
+
       setDisable(false);
     }
   }
@@ -124,9 +145,9 @@ const Login = ({ navigation }) => {
         id: user.id,
         avatar: user.photo
       }
-      let res = await api.post('login/google', null, data);
+
+      let res = await api.post('login/google',null, data);
       res = res.data;
-      console.log(res);
       await signIn(res)
 
     } catch (error) {
@@ -195,6 +216,14 @@ const Login = ({ navigation }) => {
         style={styles.container}>
         <View style={{ width: '100%' }}>
           <TextInput
+            label="Nama"
+            textInputRef={input => nameRef = input}
+            onChangeText={(text) => { setName(text); setDisable(true) }}
+            onSubmitEditing={() => emailRef.focus()}
+            onEndEditing={onChangeName}
+            error={errors.name}
+          />
+          <TextInput
             label="Email"
             textInputRef={input => emailRef = input}
             onChangeText={(text) => { setEmail(text); setDisable(true) }}
@@ -214,25 +243,27 @@ const Login = ({ navigation }) => {
             onClickEye={toogleEye}
             passwordVisible={passwordVisible}
           />
+
           {
-            errorMsg ?
+            errorMessage ?
               <Text style={
                 {
                   fontFamily: font.primary,
                   color: 'red',
                   marginTop: 10
-                }}>{errorMsg}</Text>
+                }}>{errorMessage}</Text>
               : null
           }
+
           <PrimaryButton
             isDisabled={disable}
             onPress={onSubmit}
-            title="Log In"
+            title="Buat Akun"
             marginTop={29} />
         </View>
         <View style={{ flexDirection: 'row', marginVertical: 24 }}>
           <View style={styles.border} />
-          <Text style={styles.subText}>Atau login dengan</Text>
+          <Text style={styles.subText}>Atau gunakan akun</Text>
           <View style={styles.border} />
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
@@ -240,10 +271,10 @@ const Login = ({ navigation }) => {
           <Facebook onPress={facebookLogin} style={{ flex: 1, marginLeft: 20 }} />
         </View>
         <View style={styles.loginContainer}>
-          <Text style={styles.loginText1}>Belum punya akun?
+          <Text style={styles.loginText1}>Udah punya akun?
             <Text
               style={styles.loginText2}
-              onPress={() => navigation.navigate('Register')}> Buat Akun dulu yuk!</Text>
+              onPress={() => navigation.navigate('Login')}> Langsung log in aja!</Text>
           </Text>
         </View>
       </View>
@@ -251,7 +282,7 @@ const Login = ({ navigation }) => {
   );
 }
 
-export default Login
+export default Register
 
 const styles = StyleSheet.create({
   container: {

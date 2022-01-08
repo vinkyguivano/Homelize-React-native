@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Dimensions, Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableNativeFeedback, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
-import AuthContext from '../../../context/AuthContext'
+import AuthContext from '../../../../context/AuthContext'
 import { showMessage } from 'react-native-flash-message'
-import { api, color, font } from '../../../utils'
-import { capitalize } from '../../../utils'
+import { api, color, font } from '../../../../utils'
+import { capitalize } from '../../../../utils'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
-import ActivityIndicator from '../../../components/ActivityIndicator'
+import ActivityIndicator from '../../../../components/ActivityIndicator'
 
 const { width, height } = Dimensions.get('window')
 

@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { LoginManager } from 'react-native-fbsdk'
 import { GoogleSignin } from 'react-native-google-signin'
-import { PrimaryButton } from '../../../components'
-import AuthContext from '../../../context/AuthContext'
-import { api, storage } from '../../../utils'
+import { PrimaryButton } from '../../../../components'
+import AuthContext from '../../../../context/AuthContext'
+import { api, storage } from '../../../../utils'
 
 const Profile = () => {
   const [user , setUser] = useState('');

@@ -6,15 +6,15 @@ import {
   api,
   professionalSorting as sorts,
   professionalType as types
-} from '../../../utils'
+} from '../../../../utils'
 import { showMessage } from 'react-native-flash-message'
 import { useScrollToTop } from '@react-navigation/native'
-import * as Header from '../../../components/Header'
-import * as Card from '../../../components/Card'
-import * as Skeleton from '../../../components/Skeleton'
-import * as NotFound from '../../../components/NotFound'
-import * as Modal from '../../../components/Modal'
-import PrimaryIndicator from '../../../components/ActivityIndicator'
+import * as Header from '../../../../components/Header'
+import * as Card from '../../../../components/Card'
+import * as Skeleton from '../../../../components/Skeleton'
+import * as NotFound from '../../../../components/NotFound'
+import * as Modal from '../../../../components/Modal'
+import PrimaryIndicator from '../../../../components/ActivityIndicator'
 
 const Professional = ({ route, navigation }) => {
   const [token, setToken] = useState('');

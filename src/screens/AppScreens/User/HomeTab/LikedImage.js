@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Alert, FlatList, StyleSheet, Text, View } from 'react-native'
-import PrimaryIndicator from '../../../components/ActivityIndicator'
-import * as Card from '../../../components/Card'
-import * as NotFound from '../../../components/NotFound'
-import AuthContext from '../../../context/AuthContext'
+import PrimaryIndicator from '../../../../components/ActivityIndicator'
+import * as Card from '../../../../components/Card'
+import * as NotFound from '../../../../components/NotFound'
+import AuthContext from '../../../../context/AuthContext'
 import { showMessage } from 'react-native-flash-message'
-import { api } from '../../../utils'
-import Loading from '../../../components/Loading'
+import { api } from '../../../../utils'
+import Loading from '../../../../components/Loading'
 
 const LikedImage = ({ navigation }) => {
   const { user } = useContext(AuthContext)
