@@ -16,7 +16,10 @@ import {
   ArchitectServiceOrder,
   InteriorServiceOrder,
   OrderDetail,
-  OrderPayment
+  OrderPayment,
+  ProfessionalLogin,
+  ProfessionalRegister,
+  HomeProfessional
 } from '../screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -100,30 +103,38 @@ const Router = ({ state }) => {
                     animationTypeForReplace: state.isSignout ? 'pop' : 'push'
                   }} />
                 <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
+                <Stack.Screen name="Register Professional" component={ProfessionalRegister} options={{ headerShown: false }}/>
+                <Stack.Screen name="Login Professional" component={ProfessionalLogin} options={{ headerShown: false }}/>
               </Stack.Group>
             )
-            :
-            (
-              <Stack.Group
-                screenOptions={({navigation, route}) => ({
-                  headerTitleStyle: {
-                    fontFamily: font.secondary,
-                    fontSize: 18,
-                    fontWeight: '700'
-                  },
-                  headerTintColor: '#555555'
-                })}>
-                <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
-                <Stack.Screen name="Catalogue" component={CatalogueTabs} options={{ headerTitle: "Katalog" }} />
-                <Stack.Screen name="Design Detail" component={DesignDetail} />
-                <Stack.Screen name="Professional Detail" component={ProfessionalDetail}/>
-                <Stack.Screen name="Liked Images" component={LikedImage} />
-                <Stack.Screen name="Architecture Order" component={ArchitectServiceOrder}/>
-                <Stack.Screen name="Interior Design Order" component={InteriorServiceOrder}/>
-                <Stack.Screen name="Order Detail" component={OrderDetail}/>
-                <Stack.Screen name="Order Payment" component={OrderPayment}/>
-              </Stack.Group>
-            )
+            : state.user.type === 'user' ? 
+              (
+                <Stack.Group
+                  screenOptions={({navigation, route}) => ({
+                    headerTitleStyle: {
+                      fontFamily: font.secondary,
+                      fontSize: 18,
+                      fontWeight: '700'
+                    },
+                    headerTintColor: '#555555'
+                  })}>
+                  <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
+                  <Stack.Screen name="Catalogue" component={CatalogueTabs} options={{ headerTitle: "Katalog" }} />
+                  <Stack.Screen name="Design Detail" component={DesignDetail} />
+                  <Stack.Screen name="Professional Detail" component={ProfessionalDetail}/>
+                  <Stack.Screen name="Liked Images" component={LikedImage} />
+                  <Stack.Screen name="Architecture Order" component={ArchitectServiceOrder}/>
+                  <Stack.Screen name="Interior Design Order" component={InteriorServiceOrder}/>
+                  <Stack.Screen name="Order Detail" component={OrderDetail}/>
+                  <Stack.Screen name="Order Payment" component={OrderPayment}/>
+                </Stack.Group>
+              )
+              :
+              (
+                <Stack.Group>
+                  <Stack.Screen name="Home_P" component={HomeProfessional}/>
+                </Stack.Group>
+              )
       }
     </Stack.Navigator>
   )

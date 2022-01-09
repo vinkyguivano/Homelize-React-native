@@ -36,7 +36,7 @@ const Register = ({ navigation }) => {
 
   const onChangeName = () => {
     let validName = ''
-    if (name.length < 3) {
+    if (name.trim().length < 3) {
       validName = 'Panjang nama minimal 3 karakter'
     }
 
@@ -55,7 +55,7 @@ const Register = ({ navigation }) => {
     if (!(/^[\d\w\s.!]+@{1}.+\.{1}.{2,3}$/.test(email))) {
       validEmail = 'Format email tidak valid'
     }
-    if (email.length === 0) {
+    if (email.trim().length === 0) {
       validEmail = 'Email tidak boleh kosong'
     }
 

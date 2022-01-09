@@ -24,7 +24,7 @@ const Order = ({ navigation }) => {
   const [status, setStatus] = useState(0)
   const [isModalVisible, setIsModalVisible] = useState(false)
   const filterOption = [
-    {id : 0, label: 'Semua'},
+    {id : 0, name: 'Semua'},
     ...orderStatus
   ]
   const flatListRef = useRef(null)

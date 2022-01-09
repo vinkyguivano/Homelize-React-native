@@ -245,6 +245,11 @@ const Login = ({ navigation }) => {
               style={styles.loginText2}
               onPress={() => navigation.navigate('Register')}> Buat Akun dulu yuk!</Text>
           </Text>
+          <Text style={{...styles.loginText1, marginTop: 6}}>Gabung menjadi mitra dengan
+            <Text
+                style={styles.loginText2}
+                onPress={() => navigation.navigate('Register Professional')}> daftar disini!</Text>
+          </Text>
         </View>
       </View>
     </TouchableWithoutFeedback>
@@ -281,7 +286,8 @@ const styles = StyleSheet.create({
   loginText1: {
     fontFamily: font.primary,
     color: color.black,
-    fontSize: 14
+    fontSize: 14,
+    textAlign: 'center'
   },
   loginText2: {
     color: color.primary

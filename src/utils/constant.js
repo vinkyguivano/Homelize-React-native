@@ -62,11 +62,11 @@ const transferSteps = {
 }
 
 const orderStatus = [
-  { id: 1, label: 'Menunggu Pembayaran'},
-  { id: 2, label: 'Menunggu Konfirmasi Pembayaran'},
-  { id: 3, label: 'Proses Pengerjaan'},
-  { id: 4, label: 'Selesai'},
-  { id: 5, label: 'Batal'}
+  { id: 1, name: 'Menunggu Pembayaran'},
+  { id: 2, name: 'Menunggu Konfirmasi Pembayaran'},
+  { id: 3, name: 'Proses Pengerjaan'},
+  { id: 4, name: 'Selesai'},
+  { id: 5, name: 'Batal'}
 ]
 
 export {

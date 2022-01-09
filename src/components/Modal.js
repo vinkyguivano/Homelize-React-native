@@ -961,7 +961,7 @@ export const Secondary = ({isVisible, toggleModal, label, optionList, selectedOp
     return(
       <TouchableNativeFeedback onPress={() => onChange(item.id)}>
         <View style={styleSecondary.itemContainer}>
-          <MText.Main flex={1}>{item.label}</MText.Main>
+          <MText.Main flex={1}>{item.name}</MText.Main>
           {
             item.id === selectedOption && (
               <Icon name="checkbox-marked-circle" size={20} color={color.primary}/>
@@ -992,7 +992,8 @@ export const Secondary = ({isVisible, toggleModal, label, optionList, selectedOp
             keyExtractor={(item, index) => index.toString()}
             renderItem={onRenderItem}
             style={{
-              maxHeight: 300
+              maxHeight: 300,
+              minHeight: 150
             }} 
             />
         </View>

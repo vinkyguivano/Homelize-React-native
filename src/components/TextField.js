@@ -40,6 +40,10 @@ export const TextInput = (props) => {
                 <Image source={!passwordVisible ? EyeClose : EyeOpen} style={{ width: 20, height: 20 }} />
               </TouchableOpacity>
             )
+          if (props.select)
+            return (
+              <Icon name="chevron-down" size={24} color={'black'}/>
+            )
         }}
       />
     </View>
