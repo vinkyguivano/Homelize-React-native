@@ -19,7 +19,11 @@ import {
   OrderPayment,
   ProfessionalLogin,
   ProfessionalRegister,
-  HomeProfessional
+  HomeProfessional,
+  ProfileCompletion,
+  Map,
+  Photo,
+  AddProject
 } from '../screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -132,7 +136,11 @@ const Router = ({ state }) => {
               :
               (
                 <Stack.Group>
+                  {state.user?.user?.status_id === 1 && <Stack.Screen name="Profile Completion" component={ProfileCompletion} />}
                   <Stack.Screen name="Home_P" component={HomeProfessional}/>
+                  <Stack.Screen name="Map" component={Map}/>
+                  <Stack.Screen name="Photo" component={Photo}/>
+                  <Stack.Screen name="Add Project" component={AddProject}/>
                 </Stack.Group>
               )
       }

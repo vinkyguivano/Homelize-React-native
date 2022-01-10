@@ -37,7 +37,7 @@ export const Main = ({
             paddingBottom,
             paddingHorizontal,
             paddingVertical, 
-            numberOfLines = 1,
+            numberOfLines = 0,
             flex,
             fontStyle,
             onTextLayout, 
@@ -47,7 +47,8 @@ export const Main = ({
     <Text style={{ 
       fontFamily : fontFamily || font.secondary, 
       fontSize : fontSize || 14,
-      color : color || 'black', 
+      color : color || 'black',
+      lineHeight: 22 || lineHeight, 
       fontWeight,
       textAlign,
       marginTop,
@@ -64,7 +65,6 @@ export const Main = ({
       paddingVertical,
       fontStyle,
       flex,
-      lineHeight,
       ...style
       }} 
       numberOfLines={ numberOfLines }

@@ -1001,6 +1001,58 @@ export const Secondary = ({isVisible, toggleModal, label, optionList, selectedOp
   )
 }
 
+export const Form = ({isVisible, toggleModal, label, optionList, selectedOption, onChange, onBlur}) => {
+  
+  const onRenderItem = ({item, index}) => {
+    return(
+      <TouchableNativeFeedback onPress={() => { onChange(item); toggleModal() }}>
+        <View style={styleSecondary.itemContainer}>
+          <MText.Main flex={1}>{item.name}</MText.Main>
+          {
+            item.id === selectedOption.id && (
+              <Icon name="checkbox-marked-circle" size={20} color={color.primary}/>
+            )
+          }
+        </View>
+      </TouchableNativeFeedback>
+    )
+  }
+
+  const onClose = () => {
+    onBlur()
+    toggleModal()
+  }
+  
+  return (
+    <Modal
+      isVisible={isVisible}
+      onBackdropPress={onClose}
+      onBackButtonPress={onClose}
+      style={{
+        margin: 0
+      }}>
+        <View style={styleSecondary.container}>
+          <View style={selectDesignStyles.headerWrapper}>
+            <MText.Main fontSize={16} fontWeight={'bold'}>{label}</MText.Main>
+            <TouchableOpacity onPress={toggleModal}>
+              <Icon name="close" size={25} color={'black'} />
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={optionList}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={onRenderItem}
+            style={{
+              maxHeight: 300,
+              minHeight: 150
+            }} 
+            />
+        </View>
+    </Modal>
+  )
+}
+
 const styleSecondary = StyleSheet.create({
   container: {
     backgroundColor: 'white',

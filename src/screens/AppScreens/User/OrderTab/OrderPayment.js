@@ -269,7 +269,7 @@ const OrderPayment = ({ navigation, route }) => {
             <Text.Main fontSize={15} paddingHorizontal={8} paddingVertical={8}>
               Panduan Pembayaran
             </Text.Main>
-            <TouchableOpacity onPress={() => handleToggleTransferMethod('atm')}>
+            <TouchableOpacity onPress={() => handleToggleTransferMethod('atm')} activeOpacity={1}>
               <View style={styles.methodItemContainer}>
                 <Container.row >
                   <Text.Main fontSize={15} flex={1}>Transfer Melalui ATM</Text.Main>
@@ -280,7 +280,7 @@ const OrderPayment = ({ navigation, route }) => {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleToggleTransferMethod('iBanking')}>
+            <TouchableOpacity onPress={() => handleToggleTransferMethod('iBanking')} activeOpacity={1}>
               <View style={styles.methodItemContainer}>
                 <Container.row >
                   <Text.Main fontSize={15} flex={1}>Transfer Melalui Internet Banking</Text.Main>
@@ -291,7 +291,7 @@ const OrderPayment = ({ navigation, route }) => {
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleToggleTransferMethod('mBanking')}>
+            <TouchableOpacity onPress={() => handleToggleTransferMethod('mBanking')} activeOpacity={1}>
               <View style={styles.methodItemContainer}>
                 <Container.row >
                   <Text.Main fontSize={15} flex={1}>Transfer Melalui Mobile Banking</Text.Main>

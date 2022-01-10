@@ -56,11 +56,15 @@ export const Form = React.forwardRef((props, ref) => {
   const { flex, dropdown, onDropdownPress, suffix, prefix } = props
   return (
     <View style={{ marginBottom: 25, flex }}>
-      <Text style={{
-        ...styles2.label, ...props.error && {
-          color: '#cc0000',
-        }
-      }}>{props.label}</Text>
+      {
+       props.label && (
+        <Text style={{
+          ...styles2.label, ...props.error && {
+            color: '#cc0000',
+          }
+        }}>{props.label}</Text>
+       ) 
+      }
       <View style={{ justifyContent: 'center' }}>
         {dropdown ?
           <>
@@ -74,7 +78,7 @@ export const Form = React.forwardRef((props, ref) => {
                   }
                 }}
               />
-              {dropdown && <Icon name='menu-down' size={20} style={styles2.suffix} />}
+              {dropdown && <Icon name='chevron-down' size={20} style={styles2.suffix} />}
             </TouchableOpacity>
           </>
           :

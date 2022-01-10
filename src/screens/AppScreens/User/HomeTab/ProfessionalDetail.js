@@ -182,7 +182,7 @@ const ProfessionalDetail = ({ route, navigation }) => {
           <View>
             <Container.row marginBottom={16}>
               <Icon name='map-marker-outline' size={20} color={'black'} />
-              <Text marginLeft={8} flex={0.9}>{professional.address || "-"}</Text>
+              <Text numberOfLines={1} marginLeft={8} flex={0.9}>{professional.address || "-"}</Text>
             </Container.row>
             <Container.row marginBottom={16}>
               <Icon name='phone-outline' size={20} color={'black'} />
