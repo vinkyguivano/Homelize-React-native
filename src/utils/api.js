@@ -28,6 +28,20 @@ const api = {
     })
   },
 
+  put: (url, token = "", body , params = {}, headers = {}) => {
+    return axios.put(`http://127.0.0.1:8000/api/${url}`, body, {
+      params: {
+        ...params
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        ...(token ? { 'Authorization' : `Bearer ${token}` } : {}),
+        ...headers
+      }
+    })
+  },
+
   delete:  (url, token = "", params = {}) => {
     return axios.delete(`http://127.0.0.1:8000/api/${url}`, {
       params: {

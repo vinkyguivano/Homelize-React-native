@@ -33,7 +33,11 @@ const ProfileCompletion = ({ navigation, route }) => {
       try {
         setLoading(true)
         const { data } = await api.get('professional/cities', token)
-        setCities(data)
+        const mapName = data.map(item => {
+          item.name = item.name + ", " + item.province_name
+          return item 
+        }) 
+        setCities(mapName)
         setLoading(false)
       } catch (error) {
         console.log(error.response.data)
@@ -134,7 +138,9 @@ const ProfileCompletion = ({ navigation, route }) => {
       await api.post(`v1/professionals/${user.id}/image`, token, files, {} , {
         'Content-Type' : 'multipart/formdata'
       })
-      navigation.navigate('Add Project')
+      navigation.navigate('Add Project', {
+        firstRegister: true
+      })
       setIsSubmitting(false)
     } catch (error) {
       setIsSubmitting(false)

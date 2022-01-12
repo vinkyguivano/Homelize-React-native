@@ -6,6 +6,7 @@ import { api, color, font } from '../../../../utils'
 import { capitalize } from '../../../../utils'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import ActivityIndicator from '../../../../components/ActivityIndicator'
+import { rupiahFormat } from '../../../../utils'
 
 const { width, height } = Dimensions.get('window')
 
@@ -130,7 +131,7 @@ const DesignDetail = ({ route, navigation }) => {
             </TouchableWithoutFeedback>
           </View>
           <Text style={styles.type}>{image.room?.name} {image.style?.name}</Text>
-          <Text style={styles.type}>Budget : Rp 1.000.000 - Rp 5.0000</Text>
+          <Text style={styles.type}>Budget : Rp {image.minimum_budget ? rupiahFormat(image.minimum_budget) : '0'} - Rp {image.maximum_budget ? rupiahFormat(image.maximum_budget) : '0'}</Text>
           <Text style={{...styles.type, marginBottom: 15}}>{image.description}</Text>
           <View style={styles.bar} />
           <View style={{ marginTop: 15, marginBottom: 25 }}>

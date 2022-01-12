@@ -332,8 +332,8 @@ export const Project = forwardRef((props, ref) => {
   const images = project ? project.images.map((item, index) => (
     <View key={index} style={styles2.itemContainer}>
       <Image source={{ uri: item.image_path }} style={styles2.image} />
-      <MText.Main marginBottom={5}>Jenis : {item.room}</MText.Main>
-      <MText.Main marginBottom={5}>Tipe : {item.style}</MText.Main>
+      <MText.Main marginBottom={5}>Jenis : {item.room.name}</MText.Main>
+      <MText.Main marginBottom={5}>Tipe : {item.style.name}</MText.Main>
       <MText.Main numberOfLines={0} textAlign={'justify'}>{item.description}</MText.Main>
     </View>
   )) : null
@@ -379,7 +379,7 @@ const styles2 = StyleSheet.create({
   },
   image: {
     width: '80%',
-    aspectRatio: 16 / 9,
+    aspectRatio: 4 / 3,
     marginBottom: 12
   },
   float: {

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Dimensions, ImageBackground, StyleSheet, Text, View } from 'react-native'
+import { Dimensions, ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { backgroundPrimary } from '../assets'
 
 const { width, height } = Dimensions.get('window')
@@ -113,3 +113,18 @@ const styles = StyleSheet.create({
     height: height * 0.36,
   },
 })
+
+export const Scroll = ({children, refreshControl, scrollViewProps}) => {
+  return (
+    <View style={{flex: 1, backgroundColor: 'white'}}>
+      <ScrollView
+        {...refreshControl && {refreshControl: refreshControl }}
+        {...scrollViewProps}
+        showsVerticalScrollIndicator={false}>
+          <View style={{paddingTop: 20, paddingHorizontal: 20}}>
+            {children}
+          </View>
+      </ScrollView> 
+    </View>
+  )
+}
