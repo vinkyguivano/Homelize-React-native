@@ -507,3 +507,51 @@ const styleOrder = StyleSheet.create({
     marginRight: 10
   }
 })
+
+export const OrderProfessional = memo(({item, onSelectItem}) => {
+  return(
+    <TouchableNativeFeedback onPress={() => onSelectItem(item)}>
+      <View style={styleOrderProfessional.container}>
+        <View style={styleOrderProfessional.topContainer}>
+          <View style={{flex: 1}}>
+            <View style={styleOrderProfessional.topContainer}>
+              <View style={{flex: 1}}>
+                <TextM.Main fontWeight={'bold'} marginBottom={4}>Order {item.order_type}</TextM.Main>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Icon name='account-outline' size={20} style={{marginRight: 6}}/>
+                  <TextM.Main flex={1}>{item.name}</TextM.Main>
+                </View>
+              </View>
+            </View>
+            <TextM.Main marginTop={8}>
+              {moment(item.created_at).locale('id').format('ddd, DD MMM YYYY')}
+            </TextM.Main>
+            <TextM.Main marginTop={8}>
+              Status : {capitalize(item.status.toLowerCase())}
+            </TextM.Main>
+          </View>
+          <View>
+            <Icon name='chevron-right' size={20} color={'black'}/>
+          </View>
+        </View>
+      </View>
+    </TouchableNativeFeedback>
+  )
+})
+
+const styleOrderProfessional = StyleSheet.create({
+  container: {
+    padding: 20,
+    borderBottomColor: 'lightgrey',
+    borderBottomWidth: 1,
+  },
+  topContainer: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  icon: {
+    width: width * (50 / width),
+    height: width * ( 50 / width),
+    marginRight: 10
+  }
+})

@@ -19,14 +19,17 @@ import {
   OrderPayment,
   ProfessionalLogin,
   ProfessionalRegister,
-  HomeProfessional,
+  OrderProfessional,
+  ProfileProfessional,
   ProfileCompletion,
   Map,
   Photo,
   AddProject,
   ProjectDetail,
   ProjectImage,
-  EditProjectDetail
+  EditProjectDetail,
+  EditProfile,
+  OrderDetailProfessional
 } from '../screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -57,7 +60,7 @@ const CatalogueTabs = () => {
         lazy: true,
       }}
     >
-      <TopTab.Screen name="Design" component={Design} options={{ title: 'Desain'}} />
+      <TopTab.Screen name="Design" component={Design} options={{ title: 'Desain' }} />
       <TopTab.Screen name="Professional" component={Professional} options={{ title: 'Professional' }} />
     </TopTab.Navigator>
   )
@@ -86,8 +89,36 @@ const MainTabs = () => (
     })} >
     <BottomTab.Screen name="Home" component={Home} />
     <BottomTab.Screen name="Order" component={Order} />
-    <BottomTab.Screen name="Chat" component={Chat} />
+    {/* <BottomTab.Screen name="Chat" component={Chat} /> */}
     <BottomTab.Screen name="Profile" component={Profile} />
+  </BottomTab.Navigator>
+)
+
+const ProfessionalMainTabs = () => (
+  <BottomTab.Navigator
+    screenOptions={{
+      tabBarActiveTintColor: color.primary
+    }}>
+    <BottomTab.Screen 
+      name="Order"
+      component={OrderProfessional}
+      options={{
+        tabBarIcon: ({color, size, focused}) => {
+          let iconName = focused ? 'calendar-text' : 'calendar-text-outline'
+          return <Icon name={iconName} color={color} size={size} />
+        }
+      }}/>
+    <BottomTab.Screen 
+      name="Profile"
+      component={ProfileProfessional}
+      options={{
+        tabBarIcon: ({color, size, focused}) => {
+          let iconName = focused ? 'account' : 'account-outline'
+          return <Icon name={iconName} color={color} size={size} />
+        },
+        headerShown: false
+      }}
+      />
   </BottomTab.Navigator>
 )
 
@@ -110,14 +141,14 @@ const Router = ({ state }) => {
                     animationTypeForReplace: state.isSignout ? 'pop' : 'push'
                   }} />
                 <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
-                <Stack.Screen name="Register Professional" component={ProfessionalRegister} options={{ headerShown: false }}/>
-                <Stack.Screen name="Login Professional" component={ProfessionalLogin} options={{ headerShown: false }}/>
+                <Stack.Screen name="Register Professional" component={ProfessionalRegister} options={{ headerShown: false }} />
+                <Stack.Screen name="Login Professional" component={ProfessionalLogin} options={{ headerShown: false }} />
               </Stack.Group>
             )
-            : state.user.type === 'user' ? 
+            : state.user.type === 'user' ?
               (
                 <Stack.Group
-                  screenOptions={({navigation, route}) => ({
+                  screenOptions={({ navigation, route }) => ({
                     headerTitleStyle: {
                       fontFamily: font.secondary,
                       fontSize: 18,
@@ -128,25 +159,28 @@ const Router = ({ state }) => {
                   <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
                   <Stack.Screen name="Catalogue" component={CatalogueTabs} options={{ headerTitle: "Katalog" }} />
                   <Stack.Screen name="Design Detail" component={DesignDetail} />
-                  <Stack.Screen name="Professional Detail" component={ProfessionalDetail}/>
+                  <Stack.Screen name="Professional Detail" component={ProfessionalDetail} />
                   <Stack.Screen name="Liked Images" component={LikedImage} />
-                  <Stack.Screen name="Architecture Order" component={ArchitectServiceOrder}/>
-                  <Stack.Screen name="Interior Design Order" component={InteriorServiceOrder}/>
-                  <Stack.Screen name="Order Detail" component={OrderDetail}/>
-                  <Stack.Screen name="Order Payment" component={OrderPayment}/>
+                  <Stack.Screen name="Architecture Order" component={ArchitectServiceOrder} />
+                  <Stack.Screen name="Interior Design Order" component={InteriorServiceOrder} />
+                  <Stack.Screen name="Order Detail" component={OrderDetail} />
+                  <Stack.Screen name="Order Payment" component={OrderPayment} />
+                  <Stack.Screen name="Photo" component={Photo}/>
                 </Stack.Group>
               )
               :
               (
                 <Stack.Group>
-                  {state.user?.user?.status_id === 1 &&  <Stack.Screen name="Profile Completion" component={ProfileCompletion} />}
-                  <Stack.Screen name="Home_P" component={HomeProfessional}/>
-                  <Stack.Screen name="Map" component={Map}/>
-                  <Stack.Screen name="Photo" component={Photo}/>
-                  <Stack.Screen name="Project Detail" component={ProjectDetail}/>
-                  <Stack.Screen name="Project Image" component={ProjectImage}/>
-                  <Stack.Screen name="Edit Project" component={EditProjectDetail}/>
-                  <Stack.Screen name="Add Project" component={AddProject}/>
+                  {state.user?.user?.status_id === 1 && <Stack.Screen name="Profile Completion" component={ProfileCompletion} />}
+                  <Stack.Screen name="Home_P" component={ProfessionalMainTabs} options={{ headerShown: false}} />
+                  <Stack.Screen name="Map" component={Map} />
+                  <Stack.Screen name="Photo" component={Photo} />
+                  <Stack.Screen name="Project Detail" component={ProjectDetail} />
+                  <Stack.Screen name="Project Image" component={ProjectImage} />
+                  <Stack.Screen name="Edit Project" component={EditProjectDetail} />
+                  <Stack.Screen name="Add Project" component={AddProject} options={{ headerTitle: 'Projek'}}/>
+                  <Stack.Screen name="Edit Profile" component={EditProfile}/>
+                  <Stack.Screen name="Order Detail" component={OrderDetailProfessional}/>
                 </Stack.Group>
               )
       }

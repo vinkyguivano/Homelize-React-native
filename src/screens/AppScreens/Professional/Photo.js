@@ -1,5 +1,5 @@
 import React, { useLayoutEffect } from 'react'
-import { Image, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
+import { Dimensions, Image, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 const Photo = ({ navigation, route: { params } }) => {
@@ -41,6 +41,8 @@ const Photo = ({ navigation, route: { params } }) => {
 
 export default Photo
 
+const { height, window } = Dimensions.get('window')
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'black',
@@ -58,9 +60,10 @@ const styles = StyleSheet.create({
   },
   photo: {
     width: '100%',
-    aspectRatio: 3 / 3,
+    height: '100%',
     marginTop: 'auto',
     marginBottom: 'auto',
-    resizeMode: 'cover'
+    resizeMode: 'contain',
+    maxHeight: height * (500 / height)
   }
 })

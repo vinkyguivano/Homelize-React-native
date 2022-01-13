@@ -198,7 +198,7 @@ const ProjectImage = ({ navigation, route }) => {
                           source={{ uri: image.uri }}
                           style={{
                             width: width * 250 / width,
-                            aspectRatio: 1
+                            aspectRatio: 4 / 3
                           }} />
                       </View>
                     </TouchableOpacity> : null

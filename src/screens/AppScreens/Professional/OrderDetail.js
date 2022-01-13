@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Dimensions, Image, RefreshControl, ScrollView, StyleSheet, TouchableNativeFeedback, Alert, View } from 'react-native'
-import * as Container from '../../../../components/Container'
-import { Main as Text } from '../../../../components/Text'
-import AuthContext from '../../../../context/AuthContext'
-import { api, capitalize, color, rupiahFormat } from '../../../../utils'
-import Loading from '../../../../components/Loading'
+import { Button, Dimensions, Image, RefreshControl, ScrollView, StyleSheet, TouchableNativeFeedback, Alert, View } from 'react-native'
+import * as Container from '../../../components/Container'
+import { Main as Text } from '../../../components/Text'
+import AuthContext from '../../../context/AuthContext'
+import { api, capitalize, color, rupiahFormat } from '../../../utils'
+import Loading from '../../../components/Loading'
 import { showMessage } from 'react-native-flash-message'
 import moment from 'moment'
+import * as Modal from '../../../components/Modal'
 
 const { width, height } = Dimensions.get('window')
 
@@ -52,6 +53,30 @@ const OrderDetail = ({ navigation, route: { params } }) => {
       from: 'Order Detail',
       data: { uri }
     })
+  }
+
+  const onRejectPaymentConfirmation = () => {
+    Alert.alert("Alert", "Apakah anda yakin bukti pembayaran belum sesuai?", [
+      {
+        text: 'Tidak'
+      },
+      {
+        text: 'Ya',
+        onPress: () => handleUpdateOrder({type: 4})
+      }
+    ], { cancelable: true })
+  }
+
+  const handleUpdateOrder = async (params, body={}) => {
+    try {
+      await api.post(`orders/${orderId}/update`, token, body, params );
+      await fetchOrderData()
+    } catch (error) {
+      showMessage({
+        message: 'Error '+error,
+        type: 'danger'
+      })
+    }
   }
 
   const renderArchitectOrder = (
@@ -197,7 +222,7 @@ const OrderDetail = ({ navigation, route: { params } }) => {
             {
               order.status?.id === 2 ?
                 <View>
-                  <Text fontWeight={'bold'}>Professional sedang memverifikasi pembayaran anda!</Text>
+                  <Text fontWeight={'bold'}>Segera konfirmasi bukti pembayaran dari klien anda!</Text>
                   <View style={styles.paymentSSContainer}>
                     <TouchableNativeFeedback onPress={() => onPressImage(paymentImage?.image_path)}>
                       <Image
@@ -218,12 +243,12 @@ const OrderDetail = ({ navigation, route: { params } }) => {
         <View style={{ marginVertical: 8 }}>
           <Text style={styles.orderTitle}>Informasi Pesanan</Text>
           <View style={styles.rowItem}>
-            <Text>Nama Professional : </Text>
-            <Text>{order.professional?.name}</Text>
+            <Text>Nama Pemesan : </Text>
+            <Text>{order.client_name}</Text>
           </View>
           <View style={styles.rowItem}>
-            <Text>Email Professional : </Text>
-            <Text>{order.professional?.email}</Text>
+            <Text>Nomor HP / WA : </Text>
+            <Text>{order.client_phone_number}</Text>
           </View>
           <View style={styles.rowItem}>
             <Text>Tanggal Pesanan : </Text>
@@ -249,6 +274,29 @@ const OrderDetail = ({ navigation, route: { params } }) => {
           }
         </View>
       </Container.Scroll>
+      <View style={styles.buttonContainer}>
+        {
+          order.status?.id === 2 ?
+            <Container.row justifyContent={'space-between'}>
+              <View style={{ flex: .47 }}>
+                <Button
+                  title='Accept'
+                  color={'#008000'}
+                  onPress={() => handleUpdateOrder({type: 3})} />
+              </View>
+              <View style={{ flex: .47 }}>
+                <Button
+                  title='Reject'
+                  color={color.red}
+                  onPress={onRejectPaymentConfirmation} />
+              </View>
+            </Container.row>
+            : order.status?.id === 3 ?
+              <View></View>
+              : null
+        }
+      </View>
+      <Modal.Loading1 isVisible={isSubmit} />
     </>
   )
 }
@@ -299,4 +347,3 @@ const styles = StyleSheet.create({
     padding: 14
   }
 })
-

@@ -84,7 +84,7 @@ const ProfessionalRegister = ({ navigation }) => {
     let validPhoneNumber = ''
     if (phoneNumber.trim().length === 0) {
       validPhoneNumber = 'Nomor telepon wajib diisi'
-    } else if (!(/^(62|0){1}8{1}\d{8,11}$/).test(phoneNumber)) {
+    } else if (!(/^(62|0){1}8{1}\d{7,11}$/).test(phoneNumber)) {
       validPhoneNumber = 'Format telepon tidak valid'
     }
 

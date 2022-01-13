@@ -141,7 +141,7 @@ const ProjectDetail = ({ navigation, route: { params } }) => {
         params: {
           refresh: true
         },
-        merging: true
+        merge: true
       })
     } catch (e) {
       console.log(e.response.data)
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    aspectRatio: 1,
+    aspectRatio: 4 / 3,
     marginBottom: 5
   },
   icon: {

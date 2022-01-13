@@ -58,6 +58,7 @@ const Order = ({ navigation }) => {
 
       const queryParams = {
         page: newPage,
+        uid: user.user.id,
         ...status ? { sid: status } : {}
       }
 
@@ -95,9 +96,9 @@ const Order = ({ navigation }) => {
 
   const onSelectItem = item => {
     if(item.status_id === 1){
-      navigation.navigate('Order Payment', { oid: item.id})
+      navigation.navigate('Order Payment', { orderId: item.id})
     }else{
-      navigation.navigate('Order Detail', {oid: item.id})
+      navigation.navigate('Order Detail', {orderId: item.id})
     }
   }
 

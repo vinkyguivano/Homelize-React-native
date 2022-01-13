@@ -104,7 +104,7 @@ const AddProject = ({ navigation, route: { params } }) => {
   if (loading) {
     return <Loading />
   }
-
+  
   return (
     <Container.Main>
       <ScrollView
@@ -123,6 +123,7 @@ const AddProject = ({ navigation, route: { params } }) => {
           {params?.firstRegister && (
             <View style={{ marginVertical: 15 }}>
               <Button
+                disabled={projects.length === 0 ? true : false}
                 color={color.primary}
                 title='Submit'
                 onPress={onSubmit} />
@@ -154,7 +155,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    aspectRatio: 1,
+    aspectRatio: 1.2,
   },
   icon: {
     backgroundColor: color.primary,

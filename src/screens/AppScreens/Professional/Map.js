@@ -82,7 +82,7 @@ const Map = ({ route : { params }, navigation}) => {
 
   const onSubmit = () => {
     navigation.navigate({
-      name: fromCompleteProfile ? 'Profile Completion' : '',
+      name: fromCompleteProfile ? 'Profile Completion' : 'Edit Profile',
       params: { location: region},
       merge: true
     })

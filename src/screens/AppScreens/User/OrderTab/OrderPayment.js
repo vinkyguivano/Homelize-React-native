@@ -15,7 +15,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import 'moment/locale/id' 
 
 const OrderPayment = ({ navigation, route }) => {
-  const orderId = route.params?.oid
+  const orderId = route.params?.orderId
   const { user } = useContext(AuthContext)
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -111,7 +111,7 @@ const OrderPayment = ({ navigation, route }) => {
         'Content-Type': "multipart/formdata"
       })
       console.log(data1)
-      navigation.replace('Order Detail',{ oid : orderId})
+      navigation.replace('Order Detail',{ orderId : orderId})
     } catch (e) {
       console.log('error', e.response.data)
       setError(`${e}`)
