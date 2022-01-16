@@ -121,6 +121,18 @@ const ProfessionalDetail = ({ route, navigation }) => {
     }
   }
 
+  const onPressChatButton = () => {
+    navigation.navigate({
+      name: 'Chat Room',
+      params: {
+        name: professional.name,
+        to: 'professional',
+        id: professionalId,
+        image_path: professional.profile_pic
+      }
+    })
+  }
+
   const projects = professional.projects && professional.projects.length > 0 ?
     (
       professional.projects.map((item, idx) => (
@@ -241,7 +253,13 @@ const ProfessionalDetail = ({ route, navigation }) => {
         </View>
       </ScrollView>
       <View style={styles.buttonContainer}>
+        <TouchableNativeFeedback onPress={onPressChatButton}>
+          <View style={styles.chatButtonContainer}>
+            <Icon name="message-text" color={'white'} size={20}/>
+          </View>
+        </TouchableNativeFeedback>
         <Button.PrimaryButton
+          flex={1}
           title={"Pesan Sekarang"}
           onPress={onPressOrder} />
       </View>
@@ -280,7 +298,7 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     marginHorizontal: width * 0.0486,
-    marginTop: -(height * 0.0750),
+    marginTop: -(height * 0.0500),
     padding: 20,
     backgroundColor: 'white',
     borderRadius: 20,
@@ -321,5 +339,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.32,
     shadowRadius: 5.46,
     elevation: 9,
+    flexDirection: 'row'
+  },
+  chatButtonContainer: {
+    backgroundColor: color.primary,
+    marginRight: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    borderRadius: 8
   }
 })

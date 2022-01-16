@@ -16,23 +16,23 @@ const Profile = ({ navigation }) => {
   const [professional, setProfessional] = useState('')
 
   useEffect(() => {
-    async function fetch() {
-      try {
-        setLoading(true)
-        const { data } = await api.get(`professional/professionals/${user.id}`, token)
-        setProfessional(data)
-        setLoading(false)
-      } catch (e) {
-        showMessage({
-          message: 'Error ' + e,
-          type: 'danger'
-        })
-        setLoading(false)
-      }
-    }
-
-    fetch()
+    fetchProfile()
   }, [])
+
+  const fetchProfile= async() => {
+    try {
+      setLoading(true)
+      const { data } = await api.get(`professional/professionals/${user.id}`, token)
+      setProfessional(data)
+      setLoading(false)
+    } catch (e) {
+      showMessage({
+        message: 'Error ' + e,
+        type: 'danger'
+      })
+      setLoading(false)
+    }
+  }
 
   const onLogout = () => {
     Alert.alert("Alert", "Apakah anda yakin ingin keluar ?", [
@@ -59,7 +59,9 @@ const Profile = ({ navigation }) => {
   }
 
   const onPressUpdateProfile = () => {
-    navigation.navigate('Edit Profile')
+    navigation.navigate('Edit Profile', {
+      onGoBack : () => fetchProfile()
+    })
   }
 
   const onPressUpdateProjek = () => {

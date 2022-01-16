@@ -93,6 +93,14 @@ export const Order = ({openFilter}) => {
   )
 }
 
+export const Main = ({ label }) => {
+  return(
+    <View style={styles2.container}>
+      <Text style={styles2.title}>{label}</Text>
+    </View>
+  )
+}
+
 const styles2= StyleSheet.create({
   container: {
     backgroundColor: color.primary,

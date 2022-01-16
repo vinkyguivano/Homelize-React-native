@@ -10,7 +10,9 @@ import ProfessionalDetail from './HomeTab/ProfessionalDetail'
 import Order from './OrderTab/Order'
 import OrderDetail from './OrderTab/OrderDetail'
 import OrderPayment from './OrderTab/OrderPayment'
+import Rating from './OrderTab/Rating'
 import Profile from './ProfileTab/Profile'
+import EditProfileUser from './ProfileTab/EditProfile'
 
 export{
   Chat,
@@ -25,5 +27,7 @@ export{
   Order,
   OrderDetail,
   OrderPayment,
-  Profile
+  Rating,
+  Profile,
+  EditProfileUser
 }

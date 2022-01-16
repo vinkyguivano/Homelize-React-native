@@ -208,7 +208,7 @@ const ArchitectServiceOrder = ({ route, navigation }) => {
         land_width: parseInt(landWidth),
         land_length: parseInt(landLength),
         building_area: parseInt(buildingArea),
-        budget_estimation: budgetEstimation.replace('.', ''),
+        budget_estimation: budgetEstimation.replace(/\./g, ''),
         floor_count: parseInt(floorCount),
         note: other,
         package_Id: paket.id
@@ -237,7 +237,7 @@ const ArchitectServiceOrder = ({ route, navigation }) => {
           "Content-Type" : "multipart/form-data"
         })
       }
-      navigation.replace('Order Payment', { oid: order.id })
+      navigation.replace('Order Payment', { orderId: order.id })
     } catch(error){
       console.log(error.response.data)
       setError(`${error}`)

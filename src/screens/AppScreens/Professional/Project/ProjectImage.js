@@ -113,9 +113,9 @@ const ProjectImage = ({ navigation, route }) => {
 
   const onSubmit = (val) => {
     const { description, design, room, maximumBudget, minimumBudget } = val
-    const maxBudget = isNaN(maximumBudget) ? parseInt(maximumBudget.replace(/\./g, '')) : maximumBudget
-    , minBudget =  isNaN(minimumBudget) ?  parseInt(minimumBudget.replace(/\./g, '')) : minimumBudget
-    
+    const maxBudget = parseInt(maximumBudget.replace(/\./g, '')) 
+    , minBudget =  parseInt(minimumBudget.replace(/\./g, '')) 
+  
     const budget = options.budgets.find((item, index) => {
       if (maxBudget <= item.nominal || index === 3) {
         return true
@@ -175,8 +175,8 @@ const ProjectImage = ({ navigation, route }) => {
             description: selectedData.description || '',
             design: selectedData.design || '',
             room: selectedData.room || '',
-            maximumBudget: selectedData.maximumBudget || '',
-            minimumBudget: selectedData.minimumBudget || ''
+            maximumBudget: selectedData.maximumBudget?.toString() || '',
+            minimumBudget: selectedData.minimumBudget?.toString() || ''
           }}
           validationSchema={validationSchema}
           onSubmit={(val) => onSubmit(val)}

@@ -555,3 +555,49 @@ const styleOrderProfessional = StyleSheet.create({
     marginRight: 10
   }
 })
+
+export const Contact = memo(({ item, onSelectItem}) => {
+ const time = () => {
+   const now = moment()
+   const lastUpdate = moment(item.updated_at)
+   if(now.diff(lastUpdate, 'day') === 0){
+    return lastUpdate.format("HH:mm")
+   }else{
+    return lastUpdate.format("DD/MM/YY")
+   }
+ }
+  return (
+    <TouchableNativeFeedback onPress={() => onSelectItem(item)}>
+      <View style={contactStyle.container}>
+        <View>
+          <Image source={{ uri: item.image_path}} style={contactStyle.picture}/>
+        </View>
+        <View style={{flex: 1}}>
+          <TextM.Main style={contactStyle.contactName}>{item.name}</TextM.Main>
+          <TextM.Main numberOfLines={1}>{item.last_message}</TextM.Main>
+        </View>
+        <TextM.Main fontSize={12}>{time()}</TextM.Main>
+      </View>
+    </TouchableNativeFeedback>
+  )
+})
+
+const contactStyle = StyleSheet.create({
+  container: {
+    padding: 16,
+    borderBottomColor: 'lightgrey',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  picture: {
+    height: 50,
+    width: 50,
+    borderRadius: 50,
+    marginRight: 13
+  },
+  contactName: {
+    fontSize: 15,
+    fontWeight: '400'
+  }
+})

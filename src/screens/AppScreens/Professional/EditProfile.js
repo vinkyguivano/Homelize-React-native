@@ -5,7 +5,7 @@ import { Main as Text } from '../../../components/Text'
 import AuthContext from '../../../context/AuthContext'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
-import { api, color, professionalType } from '../../../utils'
+import { api, color } from '../../../utils'
 import * as TextInput from '../../../components/TextField'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { launchImageLibrary } from 'react-native-image-picker'
@@ -167,16 +167,8 @@ const ProfileCompletion = ({ navigation, route }) => {
           'Content-Type' : 'multipart/formdata'
         })
       }
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Home_P', state : {
-          routes: [
-            {
-              name: 'Profile'
-            }
-          ]
-        }}]
-      })
+      navigation.goBack()
+      route.params.onGoBack()
     } catch (error) {
       setIsSubmitting(false)
       let err = error?.response?.data?.message
@@ -202,7 +194,7 @@ const ProfileCompletion = ({ navigation, route }) => {
                 name: profileData.name || '',
                 phoneNumber: profileData.phone_number || '',
                 description: profileData.description || '',
-                accountNo: profileData.account_number || '',
+                accountNo: profileData.account_number?.toString() || '',
                 address: profileData.address || '',
                 city: profileData.city || ''
               }}

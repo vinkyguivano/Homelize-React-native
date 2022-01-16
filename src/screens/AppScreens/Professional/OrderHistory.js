@@ -2,16 +2,14 @@ import React, { useEffect, useState, useContext, useRef, useLayoutEffect} from '
 import { FlatList, StyleSheet, TouchableNativeFeedback, View } from 'react-native'
 import { showMessage } from 'react-native-flash-message'
 import * as Container from '../../../components/Container'
-import { Main as Text } from '../../../components/Text'
 import AuthContext from '../../../context/AuthContext'
 import { api } from '../../../utils'
 import * as NotFound from '../../../components/NotFound'
 import PrimaryIndicator from '../../../components/ActivityIndicator'
 import * as Card from '../../../components/Card'
 import Loading from '../../../components/Loading'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
-const Order = ({ navigation }) => {
+const OrderHistory = ({ navigation }) => {
   const { user : { user, token } } = useContext(AuthContext)
   const [loading, setLoading] = useState(false)
   const [refresh, setRefresh] = useState(false)
@@ -23,20 +21,6 @@ const Order = ({ navigation }) => {
 
   useEffect(() => {
     fetchOrderList(true)
-  }, [])
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableNativeFeedback onPress={() => {
-          navigation.navigate('Order History')
-        }}>
-          <View style={{marginRight: 20}}>
-            <Icon name="history" color={'black'} size={25}/>
-          </View>
-        </TouchableNativeFeedback>
-      )
-    })
   }, [])
 
   const fetchOrderList = async (refresh = false) => {
@@ -55,7 +39,7 @@ const Order = ({ navigation }) => {
       const queryParams = {
         page: newPage,
         pid: user.id,
-        sid: '1,2,3,4'
+        sid: '5,6'
       }
 
       const { data } = await api.get('orders', token, queryParams)
@@ -93,7 +77,7 @@ const Order = ({ navigation }) => {
   const emptyComponent = (
     <View>
       { !loading && <NotFound.Design 
-        label={'Anda belum memiliki order yang masuk'} 
+        label={'Anda belum memiliki histori order'} 
         fontStyle={{
           marginTop: 20,
           fontSize: 16,
@@ -151,6 +135,7 @@ const Order = ({ navigation }) => {
   )
 }
 
-export default Order
+export default OrderHistory
 
 const styles = StyleSheet.create({})
+

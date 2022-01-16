@@ -1,5 +1,5 @@
 import React, { useState, forwardRef, useRef, useEffect } from 'react'
-import { Animated, Dimensions, FlatList, Image, ScrollView, StyleSheet, TextInput, TouchableNativeFeedback, TouchableOpacity, View } from 'react-native'
+import { Animated, Dimensions, FlatList, Image, Keyboard, ScrollView, StyleSheet, TextInput, TouchableNativeFeedback, TouchableOpacity, View } from 'react-native'
 import Modal from 'react-native-modal'
 import * as MText from '../components/Text'
 import * as Card from '../components/Card'
@@ -12,6 +12,7 @@ import ActivityIndicator from './ActivityIndicator'
 import Loading from '../components/Loading'
 import { graphicDesigner, architectPNG } from '../assets'
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker'
+import DocumentPicker from 'react-native-document-picker'
 
 const { width, height } = Dimensions.get('window');
 
@@ -1072,3 +1073,180 @@ const styleSecondary = StyleSheet.create({
     marginBottom: 10
   }
 })
+
+export const OrderDetail = ({ isVisible, toggleModal, renderContent}) => {
+  return (
+    <Modal
+      onBackButtonPress={toggleModal}
+      onBackdropPress={toggleModal}
+      isVisible={isVisible}>
+        <View style={styleOrderDetail.container}>
+          <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 15}}>
+            <MText.Main fontWeight={'bold'}>Detail Order</MText.Main>
+            <TouchableOpacity onPress={toggleModal}>
+              <Icon name="close" size={22}/>
+            </TouchableOpacity>
+          </View>
+          <ScrollView>
+            <View style={{padding: 15, paddingTop: 0}}>
+              {renderContent}
+            </View>
+          </ScrollView>
+        </View>
+    </Modal>
+  )
+}
+
+const styleOrderDetail = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+    height: height * (600 / height)
+  }
+})
+
+export const UpdateProgress = ({ isVisible, toggleModal, onSubmit }) => {
+  const [ title, setTitle ] = useState('')
+  const [ file, setFile ] = useState('')
+  const ref = useRef(null)
+
+  const onUploadPress = () => {
+    DocumentPicker.pick({
+      type: DocumentPicker.types.allFiles
+    })
+    .then((res) => {
+      console.log(res)
+      setFile(res[0])    
+    }, (err) => {
+      if(DocumentPicker.isCancel(err)){
+        console.log('document pick cancelled')
+      }else{
+        console.log('error ' + err)
+      }
+    })
+  }
+
+  return (
+    <Modal
+      isVisible={isVisible}
+      onBackButtonPress={toggleModal}
+      onBackdropPress={() => {
+        if(ref.current?.isFocused()){
+          Keyboard.dismiss()
+        }else{
+          toggleModal()
+        }
+      }}
+      style={{ margin: 0, alignItems: 'center'}}>
+        <View style={styleUpdateProgress.container}>
+          <View style={{ alignItems: 'center'}}>
+            <MText.Main fontSize={15} fontWeight={'bold'}>Update Progress</MText.Main>
+          </View>
+          <View>
+            <TextInput 
+              ref={ref}
+              placeholder='Masukkan status...'
+              style={styleUpdateProgress.textInput}
+              value={title}
+              onChangeText={setTitle}/>
+            <MText.Main color={color.red}>required</MText.Main>
+            <TouchableNativeFeedback onPress={onUploadPress}>
+              <View style={{ 
+                flexDirection: 'row', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
+                marginTop: 18,
+                borderBottomColor: 'darkgrey',
+                borderBottomWidth: 1,
+                paddingBottom: 5}}>
+                <MText.Main numberOfLines={1} flex={1}>{!file ? 'Upload File' : file.name }</MText.Main>
+                <Icon name="plus" size={24}/>
+              </View>
+            </TouchableNativeFeedback>
+            {
+              file ? (
+                <TouchableNativeFeedback onPress={() => setFile('')}>
+                  <View>
+                    <MText.Main fontSize={12} color={color.red}>Hapus file</MText.Main>
+                  </View>
+                </TouchableNativeFeedback>
+              ) : null
+            }
+            <Button.PrimaryButton 
+              title={'Submit'}
+              onPress={() => {
+                setTitle('')
+                setFile('')
+                onSubmit(title, file )
+              }}
+              height={32}
+              marginTop={18}
+              isDisabled={ !title }
+              fontStyle={{
+                fontSize: 14
+              }}/>
+          </View>
+        </View>
+    </Modal>
+  )
+}
+
+const styleUpdateProgress = StyleSheet.create({
+  container : {
+    backgroundColor: 'white',
+    width: 320,
+    padding: 14
+  },
+  textInput: {
+    borderBottomColor: 'darkgrey',
+    borderBottomWidth: 1,
+    padding: 0,
+    fontSize: 14,
+    fontFamily: font.secondary,
+    marginTop: 18
+  }
+})
+
+export const FinishOrder = ({ isVisible, toggleModal, onSubmit}) => {
+  const [ title, setTitle ] = useState('')
+  const ref = useRef(null)
+  return (
+    <Modal
+      isVisible={isVisible}
+      onBackButtonPress={toggleModal}
+      onBackdropPress={() => {
+        if(ref.current?.isFocused()){
+          Keyboard.dismiss()
+        }else{
+          toggleModal()
+        }
+      }}
+      style={{ margin: 0, alignItems: 'center'}}>
+        <View style={styleUpdateProgress.container}>
+          <View style={{ alignItems: 'center'}}>
+            <MText.Main fontSize={15} fontWeight={'bold'}>Order Selesai</MText.Main>
+          </View>
+          <View>
+            <MText.Main marginTop={11}>Masukkan link penyimpanan hasil akhir pekerjaan anda</MText.Main>
+            <TextInput
+              ref={ref}
+              placeholder='Masukkan link...'
+              style={{...styleUpdateProgress.textInput, marginTop: 11}}
+              value={title}
+              onChangeText={setTitle}/>
+            <Button.PrimaryButton 
+              title={'Submit'}
+              onPress={() => {
+                setTitle('')
+                onSubmit(title)
+              }}
+              height={32}
+              marginTop={18}
+              isDisabled={ !title }
+              fontStyle={{
+                fontSize: 14
+              }}/>
+          </View>
+        </View>
+    </Modal>
+  )
+}

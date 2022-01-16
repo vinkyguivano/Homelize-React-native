@@ -29,7 +29,12 @@ import {
   ProjectImage,
   EditProjectDetail,
   EditProfile,
-  OrderDetailProfessional
+  OrderDetailProfessional,
+  ChatRoom,
+  Rating,
+  EditProfileUser,
+  OrderHistory,
+  ChatList
 } from '../screens';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -89,7 +94,7 @@ const MainTabs = () => (
     })} >
     <BottomTab.Screen name="Home" component={Home} />
     <BottomTab.Screen name="Order" component={Order} />
-    {/* <BottomTab.Screen name="Chat" component={Chat} /> */}
+    <BottomTab.Screen name="Chat" component={ChatList} />
     <BottomTab.Screen name="Profile" component={Profile} />
   </BottomTab.Navigator>
 )
@@ -105,6 +110,15 @@ const ProfessionalMainTabs = () => (
       options={{
         tabBarIcon: ({color, size, focused}) => {
           let iconName = focused ? 'calendar-text' : 'calendar-text-outline'
+          return <Icon name={iconName} color={color} size={size} />
+        }
+      }}/>
+    <BottomTab.Screen 
+      name="Chat"
+      component={ChatList}
+      options={{
+        tabBarIcon: ({color, size, focused}) => {
+          let iconName = focused ? 'chat' : 'chat-outline'
           return <Icon name={iconName} color={color} size={size} />
         }
       }}/>
@@ -166,6 +180,9 @@ const Router = ({ state }) => {
                   <Stack.Screen name="Order Detail" component={OrderDetail} />
                   <Stack.Screen name="Order Payment" component={OrderPayment} />
                   <Stack.Screen name="Photo" component={Photo}/>
+                  <Stack.Screen name="Chat Room" component={ChatRoom} options={({ route }) => ({ title: route.params.name})}/>
+                  <Stack.Screen name="Rating" component={Rating}/>
+                  <Stack.Screen name="Edit Profile" component={EditProfileUser}/>
                 </Stack.Group>
               )
               :
@@ -181,6 +198,8 @@ const Router = ({ state }) => {
                   <Stack.Screen name="Add Project" component={AddProject} options={{ headerTitle: 'Projek'}}/>
                   <Stack.Screen name="Edit Profile" component={EditProfile}/>
                   <Stack.Screen name="Order Detail" component={OrderDetailProfessional}/>
+                  <Stack.Screen name="Chat Room" component={ChatRoom} options={({ route }) => ({ title: route.params.name})}/>
+                  <Stack.Screen name="Order History" component={OrderHistory}/>
                 </Stack.Group>
               )
       }

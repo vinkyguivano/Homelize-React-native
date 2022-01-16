@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Dimensions, Image, RefreshControl, ScrollView, StyleSheet, TouchableNativeFeedback, Alert, View } from 'react-native'
+import { Dimensions, Image, RefreshControl, ScrollView, StyleSheet, TouchableNativeFeedback, BackHandler, View, TouchableWithoutFeedback, Platform, PermissionsAndroid, Button, Alert } from 'react-native'
 import * as Container from '../../../../components/Container'
 import { Main as Text } from '../../../../components/Text'
 import AuthContext from '../../../../context/AuthContext'
@@ -7,6 +7,10 @@ import { api, capitalize, color, rupiahFormat } from '../../../../utils'
 import Loading from '../../../../components/Loading'
 import { showMessage } from 'react-native-flash-message'
 import moment from 'moment'
+import { PrimaryButton } from '../../../../components/Button'
+import * as Modal from '../../../../components/Modal'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import RNFetchBlob from 'rn-fetch-blob'
 
 const { width, height } = Dimensions.get('window')
 
@@ -18,6 +22,31 @@ const OrderDetail = ({ navigation, route: { params } }) => {
   const [isSubmit, setIsSubmit] = useState(false)
   const { orderId } = params
   const paymentImage = order.payment_images?.slice(-1)[0];
+  const [isOrderDetailModalOpen, setOrderDetailModalOpen] = useState(false)
+  const downloadUrl = 'http://localhost:8000/download/'
+
+  const backAction = () => {
+    navigation.goBack(),
+    params.onGoBack?.()
+    return true
+  }
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableNativeFeedback onPress={backAction}>
+          <View style={{marginRight: 24}}>
+            <Icon name="arrow-left" color={'black'} size={24}/>
+          </View>
+        </TouchableNativeFeedback>
+      )
+    })
+    BackHandler.addEventListener("hardwareBackPress", backAction)
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', backAction)
+    }
+  }, [])
 
   const fetchOrderData = async () => {
     try {
@@ -48,9 +77,117 @@ const OrderDetail = ({ navigation, route: { params } }) => {
   }
 
   const onPressImage = (uri) => {
+    setOrderDetailModalOpen(false)
     navigation.navigate("Photo", {
       from: 'Order Detail',
       data: { uri }
+    })
+  }
+
+  const toggleOrderDetailModal = () => {
+    setOrderDetailModalOpen(!isOrderDetailModalOpen)
+  }
+
+  const onPressChat = () => {
+    navigation.navigate("Chat Room", {
+      name: order.professional?.name,
+      id: order.professional?.id,
+      to: "professional",
+      image_path: order.professional?.profile_pic,
+    })
+  }
+
+  const checkPermission =  async (filename) => {
+    if(Platform.OS === 'ios'){
+      onDownloadClick(filename)
+    }else{
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Storage permission required',
+            message: 'Application needs access to your storage to download file'
+          }
+        )
+
+        if(granted === PermissionsAndroid.RESULTS.GRANTED){
+          onDownloadClick(filename)
+        }else{
+          showMessage({
+            message: 'Storage permission not granted',
+            type: 'danger'
+          })
+        }
+      } catch (e){
+        showMessage({
+          message: 'error ' + e,
+          type: 'danger'
+        })
+      }
+    }
+  }
+
+  const getFileExtention = fileUrl => {
+    // To get the file extension
+    return /[.]/.exec(fileUrl) ?
+             /[^.]+$/.exec(fileUrl) : undefined;
+  };
+
+  const onDownloadClick = async (filename) => {
+    let date = new Date()
+    let fileURL = downloadUrl + filename
+    let fileExt = "." + getFileExtention(fileURL)[0]
+    const { config, fs} = RNFetchBlob
+    let RootDir = fs.dirs.DownloadDir
+    let options = {
+      fileCache: true,
+      addAndroidDownloads: {
+        useDownloadManager: true,
+        notification: true,
+        description: 'downloading file..',
+        path: RootDir + '/file_'+ Math.floor(date.getTime() + date.getSeconds() / 2) + fileExt
+      }
+    }
+
+    config(options).fetch('GET', fileURL).then(res => {
+      console.log('res ' + JSON.stringify(res))
+    }) 
+  }
+
+  const onCompleteOrder = () => {
+    Alert.alert('Konfirmasi', 'Apakah anda yakin bahwa pesanan anda telah sesuai ?', [
+      {
+        text: 'Ya',
+        onPress: handleCompleteOrder
+      },
+      {
+        text: 'Tidak'
+      }
+    ], { cancelable: true})
+  }
+
+  const handleCompleteOrder = async () => {
+    try {
+      setLoading(true)
+      await api.post(`orders/${orderId}/update`, token, {} , { type: 6});
+      await fetchOrderData()
+      setLoading(false)
+    } catch (error) {
+      showMessage({
+        message: 'Error ' + error,
+        type: 'danger'
+      })
+    }
+  }
+
+  const onRatingButtonPress = () => {
+    navigation.navigate('Rating', {
+      orderId: orderId,
+      rate: order.rate,
+      review: order.review,
+      profile_pic: order.professional?.profile_pic,
+      prof_name: order.professional?.name,
+      onGoBack: () => fetchOrderData()
     })
   }
 
@@ -100,7 +237,7 @@ const OrderDetail = ({ navigation, route: { params } }) => {
       }
       {
         order.detail?.images && (
-          <View style={{ marginVertical: 8, marginRight: -20 }}>
+          <View style={{ marginVertical: 8, marginRight: -15 }}>
             <Text marginBottom={8}>Gambar Pendukung :</Text>
             <ScrollView
               horizontal={true}
@@ -154,7 +291,7 @@ const OrderDetail = ({ navigation, route: { params } }) => {
             }
             {
               item.images && (
-                <View style={{ marginVertical: 8, marginRight: -20 }}>
+                <View style={{ marginVertical: 8, marginRight: -15 }}>
                   <Text marginBottom={8}>Gambar Pendukung :</Text>
                   <ScrollView
                     horizontal={true}
@@ -178,10 +315,59 @@ const OrderDetail = ({ navigation, route: { params } }) => {
     </View>
   )
 
+  const renderOrderProgress = (order.order_progress && order.order_progress.length > 0) && (
+    <View>
+      { order.order_progress.map((item, index, self) => (
+        <View key={index}>
+          <View style={styles.progressContainer}>
+            <View style={{flex: .3, marginLeft: 8}}>
+              <View style={{flex: 1, alignSelf: 'flex-start'}}>
+                <Icon 
+                  name="circle-slice-8" 
+                  size={24} 
+                  color={index === 0 ? color.primary: 'lightgrey'}
+                  style={styles.circleIcon}/>
+                <View style={{ 
+                    flex: index === self.length - 1 ? 0 : 1 , 
+                    backgroundColor: index === 0 ? color.primary : 'lightgrey', 
+                    alignSelf: 'center', 
+                    width: 2}}/>
+              </View>
+            </View>
+            <View style={{flex: 1, marginBottom: 13}}>
+              <Text fontWeight={'bold'} fontSize={14}>{item.name} - {`${moment(item.created_at).format('DD/MM/YY')}`}</Text>
+              {
+                item.link ? (
+                  <View>
+                    <Text>Kamu dapat melihatnya dengan menekan tombol ini. 
+                      <TouchableWithoutFeedback onPress={()=>checkPermission(item.link)}>
+                        <Icon name="download" size={20}/>
+                      </TouchableWithoutFeedback>
+                    </Text>
+                  </View>
+                ) : item.description ? (
+                  <View>
+                    <Text>{item.description}</Text>
+                  </View>
+                ) : null
+              }
+            </View>
+          </View>
+        </View>
+      ))}
+    </View>
+  )
+
+  const renderRating = (
+    <View>
+
+    </View>
+  )
+
   if (loading) return <Loading />
 
   return (
-    <>
+    <View style={{flex: 1}}>
       <Container.Scroll
         refreshControl={
           <RefreshControl
@@ -206,11 +392,12 @@ const OrderDetail = ({ navigation, route: { params } }) => {
                     </TouchableNativeFeedback>
                   </View>
                 </View>
-                : order.status?.id === 3 ?
-                  <View></View>
-                  : order.status?.id === 4 ?
-                    <View></View>
-                    : null
+                : (order.status?.id === 3 || order.status?.id === 4 || order.status?.id === 5) ?
+                <View>
+                  {order.status?.id === 5 && renderRating}
+                  {renderOrderProgress}
+                </View>
+                : null
             }
           </View>
         </View>
@@ -238,18 +425,52 @@ const OrderDetail = ({ navigation, route: { params } }) => {
             <Text>{order.type?.name}</Text>
           </View>
         </View>
-        <View style={styles.greyBar} />
-        <View style={{ marginTop: 8, marginBottom: 16 }}>
-          <Text style={{ ...styles.orderTitle, fontSize: 14 }}>
-            Detail Pesanan
-          </Text>
-          {
-            order.type?.id === 1 ?
-              renderArchitectOrder : renderInteriorOrder
-          }
+        <View style={{alignSelf: 'center'}}>
+          <PrimaryButton 
+            title={"Lihat Detail"}
+            height={'auto'}
+            padding={10}
+            width={150}
+            fontStyle={{
+              fontSize: 15
+            }}
+            onPress={toggleOrderDetailModal}
+            marginBottom={16}/>
         </View>
+        <View style={styles.greyBar} />
+        { (order.status?.id === 2 || order.status?.id === 3 || order.status?.id === 4) &&
+          <TouchableNativeFeedback onPress={onPressChat}>
+            <View style={styles.buttonChatContainer}>
+              <Icon name="message-text" size={24} color={'white'} />
+              <Text marginLeft={8} color={'white'} fontWeight={'bold'}>Chat Professional</Text>
+            </View>
+          </TouchableNativeFeedback> 
+        }
+        <View style={{marginBottom: 16}}/>
       </Container.Scroll>
-    </>
+      {
+        order.status?.id === 4 ? (
+          <View style={styles.buttonContainer}>
+            <Button 
+              title='Selesai'
+              color={'#008000'}
+              onPress={onCompleteOrder}/>
+          </View>
+        ) : order.status?.id === 5 ? (
+          <View style={styles.buttonContainer}>
+            <Button 
+              title={`${order?.rate ? 'Lihat' : 'Beri'} ulasan`}
+              color={'#008000'}
+              onPress={onRatingButtonPress}/>
+          </View> 
+        ) : null
+      }
+      <Modal.OrderDetail 
+        isVisible={isOrderDetailModalOpen}
+        toggleModal={toggleOrderDetailModal}
+        renderContent={ order.type?.id === 1 ?
+          renderArchitectOrder : renderInteriorOrder}/>
+    </View>
   )
 }
 
@@ -296,7 +517,21 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     elevation: 8,
     shadowColor: '#000000',
-    padding: 14
-  }
+    padding: 14,
+    marginTop: 'auto'
+  },
+  buttonChatContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: color.primary,
+    marginTop: 20,
+    padding: 9,
+    borderRadius: 5,
+    marginBottom: 16
+  },
+  progressContainer: {
+    flexDirection: 'row'
+  },
 })
 

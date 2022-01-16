@@ -65,8 +65,9 @@ const orderStatus = [
   { id: 1, name: 'Menunggu Pembayaran'},
   { id: 2, name: 'Menunggu Konfirmasi Pembayaran'},
   { id: 3, name: 'Proses Pengerjaan'},
-  { id: 4, name: 'Selesai'},
-  { id: 5, name: 'Batal'}
+  { id: 4, name: 'Menunggu Konfirmasi Selesai'},
+  { id: 5, name: 'Selesai'},
+  { id: 6, name: 'Batal'}
 ]
 
 export {

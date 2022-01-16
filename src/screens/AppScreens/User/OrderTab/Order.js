@@ -96,9 +96,15 @@ const Order = ({ navigation }) => {
 
   const onSelectItem = item => {
     if(item.status_id === 1){
-      navigation.navigate('Order Payment', { orderId: item.id})
+      navigation.navigate('Order Payment', { 
+        orderId: item.id,
+        onGoBack: () => fetchOrderList(true)
+      })
     }else{
-      navigation.navigate('Order Detail', {orderId: item.id})
+      navigation.navigate('Order Detail', {
+        orderId: item.id,
+        onGoBack: () => fetchOrderList(true)
+      })
     }
   }
 

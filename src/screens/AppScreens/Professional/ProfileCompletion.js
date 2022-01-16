@@ -5,7 +5,7 @@ import { Main as Text } from '../../../components/Text'
 import AuthContext from '../../../context/AuthContext'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
-import { api, color, professionalType } from '../../../utils'
+import { api, color } from '../../../utils'
 import * as TextInput from '../../../components/TextField'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { launchImageLibrary } from 'react-native-image-picker'
@@ -26,6 +26,11 @@ const ProfileCompletion = ({ navigation, route }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { user: { user, token } } = useContext(AuthContext)
   const { name, email, phone_number, type_id } = user
+  const professionalType = [
+    { id: 1, name: 'Arsitek' },
+    { id: 2, name: 'Desainer Interior' },
+    { id: 3, name: 'Arsitek & Desainer Interior' }
+  ]
   const type = professionalType.find(item => item.id === type_id)
 
   useEffect(() => {

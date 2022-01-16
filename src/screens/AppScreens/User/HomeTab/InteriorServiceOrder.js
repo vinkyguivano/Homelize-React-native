@@ -281,7 +281,7 @@ const InteriorServiceOrder = ({ navigation, route }) => {
         console.log("images have been uploaded")
       }
 
-      navigation.replace('Order Payment', { oid: orderId })
+      navigation.replace('Order Payment', { orderId: orderId })
     }catch(error){
       console.log(error.response.data)
       setError(`${error}`)

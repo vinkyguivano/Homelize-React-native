@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Button, Dimensions, Image, RefreshControl, ScrollView, StyleSheet, TouchableNativeFeedback, Alert, View } from 'react-native'
+import { Button, Dimensions, Image, RefreshControl, ScrollView, StyleSheet, TouchableNativeFeedback, Alert, View, BackHandler, TouchableWithoutFeedback, Platform, PermissionsAndroid } from 'react-native'
 import * as Container from '../../../components/Container'
 import { Main as Text } from '../../../components/Text'
 import AuthContext from '../../../context/AuthContext'
@@ -8,6 +8,9 @@ import Loading from '../../../components/Loading'
 import { showMessage } from 'react-native-flash-message'
 import moment from 'moment'
 import * as Modal from '../../../components/Modal'
+import { PrimaryButton } from '../../../components/Button'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import RNFetchBlob from 'rn-fetch-blob'
 
 const { width, height } = Dimensions.get('window')
 
@@ -18,7 +21,35 @@ const OrderDetail = ({ navigation, route: { params } }) => {
   const [refresh, setRefresh] = useState(false)
   const [isSubmit, setIsSubmit] = useState(false)
   const { orderId } = params
+  const [isUpdateProgressModalOpen, setUpdateProgressModalOpen] = useState(false)
+  const [isOrderDetailModalOpen, setOrderDetailModalOpen] = useState(false)
+  const [isFinishOrderModalOpen, setFinishOrderModalOpen] = useState(false)
   const paymentImage = order.payment_images?.slice(-1)[0];
+  const downloadUrl = 'http://localhost:8000/download/'
+
+  const backAction = () => {
+    navigation.goBack(),
+      params.onGoBack?.()
+    return true
+  }
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableNativeFeedback onPress={backAction}>
+          <View style={{ marginRight: 24 }}>
+            <Icon name="arrow-left" color={'black'} size={24} />
+          </View>
+        </TouchableNativeFeedback>
+      )
+    })
+    BackHandler.addEventListener("hardwareBackPress", backAction)
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', backAction)
+    }
+  }, [])
+
 
   const fetchOrderData = async () => {
     try {
@@ -49,6 +80,7 @@ const OrderDetail = ({ navigation, route: { params } }) => {
   }
 
   const onPressImage = (uri) => {
+    setOrderDetailModalOpen(false)
     navigation.navigate("Photo", {
       from: 'Order Detail',
       data: { uri }
@@ -62,21 +94,140 @@ const OrderDetail = ({ navigation, route: { params } }) => {
       },
       {
         text: 'Ya',
-        onPress: () => handleUpdateOrder({type: 4})
+        onPress: () => handleUpdateOrder({ type: 4 })
       }
     ], { cancelable: true })
   }
 
-  const handleUpdateOrder = async (params, body={}) => {
+  const handleUpdateOrder = async (params, body = {}) => {
     try {
-      await api.post(`orders/${orderId}/update`, token, body, params );
+      setLoading(true)
+      await api.post(`orders/${orderId}/update`, token, body, params);
       await fetchOrderData()
+      setLoading(false)
     } catch (error) {
       showMessage({
-        message: 'Error '+error,
+        message: 'Error ' + error,
         type: 'danger'
       })
     }
+  }
+
+  const toggleUpdateProgressModal = () => {
+    setUpdateProgressModalOpen(!isUpdateProgressModalOpen)
+  }
+
+  const toggleOrderDetailModal = () => {
+    setOrderDetailModalOpen(!isOrderDetailModalOpen)
+  }
+
+  const toggleFinishOrderModal = () => {
+    setFinishOrderModalOpen(!isFinishOrderModalOpen)
+  }
+
+  const onPressChat = () => {
+    navigation.navigate("Chat Room", {
+      name: order.user?.name,
+      id: order.user?.id,
+      to: "client",
+      image_path: order.user?.profile_pic,
+    })
+  }
+
+  const onUpdateProgressSubmit = async (status, file) => {
+    const formData = new FormData()
+    formData.append('current_update', status)
+    if (file) {
+      formData.append('file', {
+        name: file.name,
+        type: file.type,
+        uri: file.uri
+      })
+    }
+    try {
+      setIsSubmit(true)
+      await api.post(`orders/${orderId}/update-progress`, token, formData, {}, {
+        'Content-Type': 'multipart/form-data'
+      })
+      await fetchOrderData()
+      setIsSubmit(false)
+      setUpdateProgressModalOpen(false)
+      showMessage({
+        message: "Updated Successfully",
+        type: 'success'
+      })
+    } catch (error) {
+      showMessage({
+        message: 'Error ' + error,
+        type: 'danger'
+      })
+    }
+  }
+
+  const getFileExtention = fileUrl => {
+    // To get the file extension
+    return /[.]/.exec(fileUrl) ?
+             /[^.]+$/.exec(fileUrl) : undefined;
+  };
+
+  const checkPermission =  async (filename) => {
+    if(Platform.OS === 'ios'){
+      onDownloadClick(filename)
+    }else{
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Storage permission required',
+            message: 'Application needs access to your storage to download file'
+          }
+        )
+
+        if(granted === PermissionsAndroid.RESULTS.GRANTED){
+          onDownloadClick(filename)
+        }else{
+          showMessage({
+            message: 'Storage permission not granted',
+            type: 'danger'
+          })
+        }
+      } catch (e){
+        showMessage({
+          message: 'error ' + e,
+          type: 'danger'
+        })
+      }
+    }
+  }
+
+  const onDownloadClick = async (filename) => {
+    let date = new Date()
+    let fileURL = downloadUrl + filename
+    let fileExt = '.' + getFileExtention(fileURL)[0]
+    const { config, fs} = RNFetchBlob
+    let RootDir = fs.dirs.DownloadDir
+    let options = {
+      fileCache: true,
+      addAndroidDownloads: {
+        useDownloadManager: true,
+        notification: true,
+        description: 'downloading file..',
+        path: RootDir + '/file_'+ Math.floor(date.getTime() + date.getSeconds() / 2) + fileExt
+      }
+    }
+
+    config(options).fetch('GET', fileURL).then(res => {
+      console.log('res ' + JSON.stringify(res))
+    }) 
+  }
+
+  const onFinishOrder = (link) => {
+    const params ={
+      type: 5,
+      link: link
+    }
+    setFinishOrderModalOpen(false)
+    handleUpdateOrder(params)    
   }
 
   const renderArchitectOrder = (
@@ -125,7 +276,7 @@ const OrderDetail = ({ navigation, route: { params } }) => {
       }
       {
         order.detail?.images && (
-          <View style={{ marginVertical: 8, marginRight: -20 }}>
+          <View style={{ marginVertical: 8, marginRight: -15 }}>
             <Text marginBottom={8}>Gambar Pendukung :</Text>
             <ScrollView
               horizontal={true}
@@ -203,10 +354,53 @@ const OrderDetail = ({ navigation, route: { params } }) => {
     </View>
   )
 
+  const renderOrderProgress = (order.order_progress && order.order_progress.length > 0) && (
+    <View>
+      { order.order_progress.map((item, index, self) => (
+        <View key={index}>
+          <View style={styles.progressContainer}>
+            <View style={{flex: .3, marginLeft: 8}}>
+              <View style={{flex: 1, alignSelf: 'flex-start'}}>
+                <Icon 
+                  name="circle-slice-8" 
+                  size={24} 
+                  color={index === 0 ? color.primary: 'lightgrey'}
+                  style={styles.circleIcon}/>
+                <View style={{ 
+                    flex: index === self.length - 1 ? 0 : 1 , 
+                    backgroundColor: index === 0 ? color.primary : 'lightgrey', 
+                    alignSelf: 'center', 
+                    width: 2}}/>
+              </View>
+            </View>
+            <View style={{flex: 1, marginBottom: 13}}>
+              <Text fontWeight={'bold'} fontSize={14}>{item.name} - {`${moment(item.created_at).format('DD/MM/YY')}`}</Text>
+              {
+                item.link ? (
+                  <View>
+                    <Text>Kamu dapat melihatnya dengan menekan tombol ini.{` `}  
+                      <TouchableWithoutFeedback onPress={()=>checkPermission(item.link)}>
+                        <Icon name="download" size={20}/>
+                      </TouchableWithoutFeedback>
+                    </Text>
+                  </View>
+                ) : item.description ? (
+                  <View>
+                    <Text>{item.description}</Text>
+                  </View>
+                ) : null
+              }
+            </View>
+          </View>
+        </View>
+      ))}
+    </View>
+  )
+
   if (loading) return <Loading />
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <Container.Scroll
         refreshControl={
           <RefreshControl
@@ -231,11 +425,11 @@ const OrderDetail = ({ navigation, route: { params } }) => {
                     </TouchableNativeFeedback>
                   </View>
                 </View>
-                : order.status?.id === 3 ?
-                  <View></View>
-                  : order.status?.id === 4 ?
-                    <View></View>
-                    : null
+                : (order.status?.id === 3 || order.status?.id === 4 || order.status?.id === 5) ?
+                  <View>
+                    {renderOrderProgress}
+                  </View>
+                  : null
             }
           </View>
         </View>
@@ -263,41 +457,85 @@ const OrderDetail = ({ navigation, route: { params } }) => {
             <Text>{order.type?.name}</Text>
           </View>
         </View>
-        <View style={styles.greyBar} />
-        <View style={{ marginTop: 8, marginBottom: 16 }}>
-          <Text style={{ ...styles.orderTitle, fontSize: 14 }}>
-            Detail Pesanan
-          </Text>
-          {
-            order.type?.id === 1 ?
-              renderArchitectOrder : renderInteriorOrder
-          }
+        <View style={{ alignSelf: 'center' }}>
+          <PrimaryButton
+            title={"Lihat Detail"}
+            height={'auto'}
+            padding={10}
+            width={150}
+            fontStyle={{
+              fontSize: 15
+            }}
+            onPress={toggleOrderDetailModal}
+            marginBottom={16} />
         </View>
-      </Container.Scroll>
-      <View style={styles.buttonContainer}>
-        {
-          order.status?.id === 2 ?
-            <Container.row justifyContent={'space-between'}>
-              <View style={{ flex: .47 }}>
-                <Button
-                  title='Accept'
-                  color={'#008000'}
-                  onPress={() => handleUpdateOrder({type: 3})} />
-              </View>
-              <View style={{ flex: .47 }}>
-                <Button
-                  title='Reject'
-                  color={color.red}
-                  onPress={onRejectPaymentConfirmation} />
-              </View>
-            </Container.row>
-            : order.status?.id === 3 ?
-              <View></View>
-              : null
+        <View style={styles.greyBar} />
+        {(order.status?.id === 2 || order.status?.id === 3 || order.status?.id === 4) &&
+          <TouchableNativeFeedback onPress={onPressChat}>
+            <View style={styles.buttonChatContainer}>
+              <Icon name="message-text" size={24} color={'white'} />
+              <Text marginLeft={8} color={'white'} fontWeight={'bold'}>Chat Client</Text>
+            </View>
+          </TouchableNativeFeedback>
         }
-      </View>
+        <View style={{marginBottom: 16}}/>
+      </Container.Scroll>
+      {(order.status?.id === 2 || order.status?.id === 3) &&
+        <View style={styles.buttonContainer}>
+          <Container.row justifyContent={'space-between'}>
+            {
+              order.status?.id === 2 ?
+                <>
+                  <View style={{ flex: .47 }}>
+                    <Button
+                      title='Accept'
+                      color={'#008000'}
+                      onPress={() => handleUpdateOrder({ type: 3 })} />
+                  </View>
+                  <View style={{ flex: .47 }}>
+                    <Button
+                      title='Reject'
+                      color={color.red}
+                      onPress={onRejectPaymentConfirmation} />
+                  </View>
+                </>
+                : order.status?.id === 3 ?
+                  <>
+                    <View style={{ flex: .5 }}>
+                      <Button
+                        title='Update Progress'
+                        color={'#008000'}
+                        onPress={toggleUpdateProgressModal} />
+                    </View>
+                    <View style={{ flex: .45 }}>
+                      <Button
+                        disabled={!order.order_progress || order.order_progress?.length < 3}
+                        title='SELESAI'
+                        color={'#008000'}
+                        onPress={toggleFinishOrderModal} />
+                  </View>
+                  </>
+                  : null
+            }
+          </Container.row>
+        </View>
+      }
+      <Modal.UpdateProgress
+        isVisible={isUpdateProgressModalOpen}
+        toggleModal={toggleUpdateProgressModal}
+        onSubmit={onUpdateProgressSubmit} />
+      <Modal.OrderDetail
+        isVisible={isOrderDetailModalOpen}
+        toggleModal={toggleOrderDetailModal}
+        renderContent={order.type?.id === 1 ?
+          renderArchitectOrder : renderInteriorOrder} />
+      <Modal.FinishOrder
+         isVisible={isFinishOrderModalOpen}
+         toggleModal={toggleFinishOrderModal}
+         onSubmit={onFinishOrder}
+      />
       <Modal.Loading1 isVisible={isSubmit} />
-    </>
+    </View>
   )
 }
 
@@ -344,6 +582,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     elevation: 8,
     shadowColor: '#000000',
-    padding: 14
-  }
+    padding: 14,
+    marginTop: 'auto'
+  },
+  buttonChatContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: color.primary,
+    marginTop: 20,
+    padding: 9,
+    borderRadius: 5,
+    marginBottom: 16
+  },
+  progressContainer: {
+    flexDirection: 'row'
+  },
 })
