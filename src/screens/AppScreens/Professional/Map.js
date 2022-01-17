@@ -61,13 +61,12 @@ const Map = ({ route : { params }, navigation}) => {
             const longitude = parseFloat(position.coords.longitude),
               latitude = parseFloat(position.coords.latitude)
             resolve({ latitude, longitude })
-          }
-        ),
+          },
           (error) => {
             setError(`${error.code} ${error.message}`)
             resolve({})
           },
-          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 })
       })
     } else {
       res = "Permission Denied"

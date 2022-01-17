@@ -47,7 +47,7 @@ const OrderRating = ({ navigation, route: { params } }) => {
           <Text style={styles.profName}>{prof_name}</Text>
           <View style={styles.ratingContainer}>
             <Rating
-              imageSize={50}
+              imageSize={45}
               startingValue={rate || 0}
               onFinishRating={ratingCompleted}
               readonly={rate ? true : false}

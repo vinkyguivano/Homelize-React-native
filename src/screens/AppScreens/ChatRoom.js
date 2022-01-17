@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useLayoutEffect } from 'react'
-import { Image, StyleSheet, Text, View, BackHandler, TouchableNativeFeedback } from 'react-native'
+import { Image, StyleSheet, Text, View, BackHandler, TouchableNativeFeedback, TouchableOpacity } from 'react-native'
 import { GiftedChat } from 'react-native-gifted-chat'
 import AuthContext from '../../context/AuthContext'
 import firebase from '../../config/firebase'
@@ -42,10 +42,15 @@ const ChatRoom = ({ navigation, route: { params } }) => {
       ),
       headerTitle: (props) => (
         <View style={styles.headerContainer}>
-          <Image
-            source={{ uri: image_path }}
-            style={styles.image} />
-          <Text style={styles.text}>{name}</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Photo', {
+            from: 'Chat Room',
+            data: { uri : image_path }
+          })}>
+            <Image
+              source={{ uri: image_path }}
+              style={styles.image} />
+          </TouchableOpacity>
+          <Text style={styles.text} numberOfLines={1}>{name}</Text>
         </View>
       ),
       headerBackVisible: false
@@ -108,10 +113,13 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
+    marginRight: 20
   },
   text: {
     fontSize: 16,
     color: 'black',
-    fontFamily: font.secondary
+    fontFamily: font.secondary,
+    flex: 1
   }
 })
