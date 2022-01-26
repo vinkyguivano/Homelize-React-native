@@ -42,7 +42,8 @@ export const Main = ({
             fontStyle,
             onTextLayout, 
             lineHeight,
-            style}) => {
+            style,
+            onPress }) => {
   return(
     <Text style={{ 
       fontFamily : fontFamily || font.secondary, 
@@ -68,7 +69,8 @@ export const Main = ({
       ...style
       }} 
       numberOfLines={ numberOfLines }
-      {... onTextLayout ? onTextLayout={onTextLayout} : {}}>
+      {... onTextLayout ? onTextLayout={onTextLayout} : {}}
+      {... onPress ? { onPress: onPress } : {}}>
       {children}
     </Text>
   )

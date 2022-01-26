@@ -1,7 +1,6 @@
 import React, { useEffect, useContext, useState, useRef } from 'react'
 import { StyleSheet, View, FlatList } from 'react-native'
 import * as Container from '../../../../components/Container'
-import * as Text from '../../../../components/Text'
 import AuthContext from '../../../../context/AuthContext'
 import PrimaryIndicator from '../../../../components/ActivityIndicator'
 import Loading from '../../../../components/Loading'
@@ -12,6 +11,7 @@ import * as Card from '../../../../components/Card'
 import * as NotFound from '../../../../components/NotFound'
 import * as Modal from '../../../../components/Modal'
 import { orderStatus } from '../../../../utils'
+import { useFocusEffect } from '@react-navigation/native'
 
 const Order = ({ navigation }) => {
   const { user } = useContext(AuthContext)
@@ -42,6 +42,12 @@ const Order = ({ navigation }) => {
   useEffect(() => {
     fetchOrderList(true)
   }, [status])
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchOrderList(true)
+    }, [status])
+  )
 
   const fetchOrderList = async (refresh = false) => {
     try {

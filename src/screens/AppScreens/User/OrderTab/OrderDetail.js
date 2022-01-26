@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Dimensions, Image, RefreshControl, ScrollView, StyleSheet, TouchableNativeFeedback, BackHandler, View, TouchableWithoutFeedback, Platform, PermissionsAndroid, Button, Alert } from 'react-native'
+import { Dimensions, Image, RefreshControl, ScrollView, StyleSheet, TouchableNativeFeedback, BackHandler, View, TouchableWithoutFeedback, Platform, PermissionsAndroid, Button, Alert, Linking, TouchableOpacity } from 'react-native'
 import * as Container from '../../../../components/Container'
 import { Main as Text } from '../../../../components/Text'
 import AuthContext from '../../../../context/AuthContext'
@@ -21,8 +21,11 @@ const OrderDetail = ({ navigation, route: { params } }) => {
   const [refresh, setRefresh] = useState(false)
   const [isSubmit, setIsSubmit] = useState(false)
   const { orderId } = params
-  const paymentImage = order.payment_images?.slice(-1)[0];
+  const paymentImage = order.payment_images?.[0];
   const [isOrderDetailModalOpen, setOrderDetailModalOpen] = useState(false)
+  const [isComplaintModalVisible, setComplaintModalVisible] = useState(false)
+  const [selectedComplaint, setSelectedComplaint] = useState('')
+  const [isComplaintModalDetailOpen, setComplaintDetailModalOpen] = useState(false)
   const downloadUrl = 'http://localhost:8000/download/'
 
   const backAction = () => {
@@ -191,6 +194,48 @@ const OrderDetail = ({ navigation, route: { params } }) => {
     })
   }
 
+  const toggleComplaintModal = () => {
+    setComplaintModalVisible(!isComplaintModalVisible)
+  }
+
+  const onComplaintSubmit = async (title, desc, photo) => {
+    try {
+      setIsSubmit(true)
+      let data = new FormData()
+      data.append('title', title)
+      data.append('description', desc)
+      data.append('image', {
+        name: photo.fileName,
+        type: photo.type,
+        uri: Platform.OS === 'ios' ?
+        photo.uri.replace('file://', '')
+        : photo.uri
+      })
+
+      await api.post(`orders/${orderId}/update`, token, data , { type: 7}, {
+        'Content-Type': 'multipart/formdata'
+      });
+      await fetchOrderData()
+      toggleComplaintModal()
+      setIsSubmit(false)
+    } catch (error) {
+      console.log(error.response.data)
+      showMessage({
+        message: 'Error ' + error,
+        type: 'danger'
+      })
+      setIsSubmit(false)
+    }
+  }
+
+  const openDetailComplaint = (complaintId) => {
+    const complaint = order.order_complaints.find((item) => item.id === complaintId)
+    if(complaint){
+      setComplaintDetailModalOpen(true)
+      setSelectedComplaint(complaint)
+    }
+  }
+
   const renderArchitectOrder = (
     <View>
       <View style={styles.rowItem}>
@@ -339,15 +384,32 @@ const OrderDetail = ({ navigation, route: { params } }) => {
               {
                 item.link ? (
                   <View>
-                    <Text>Kamu dapat melihatnya dengan menekan tombol ini. 
+                    <Text>Kamu dapat melihatnya dengan menekan tombol ini.{` `} 
                       <TouchableWithoutFeedback onPress={()=>checkPermission(item.link)}>
-                        <Icon name="download" size={20}/>
+                        <Icon name="download" size={25} color={'black'}/>
                       </TouchableWithoutFeedback>
                     </Text>
                   </View>
-                ) : item.description ? (
+                ) : item.url ? (
+                  <View>
+                    <Text>
+                      {item.description.split(' ').slice(0, -1).join(' ')}
+                      {` `}
+                      <Text onPress={() => Linking.openURL(item.url)} color={'blue'}>
+                        {item.url}
+                      </Text>
+                    </Text>
+                  </View>
+                ) : 
+                item.description ? (
                   <View>
                     <Text>{item.description}</Text>
+                  </View>
+                ) : item.complaint_id ? (
+                  <View>
+                    <Text onPress={() => openDetailComplaint(item.complaint_id)}>
+                      {'Lihat detail komplain >'}
+                    </Text>
                   </View>
                 ) : null
               }
@@ -355,12 +417,6 @@ const OrderDetail = ({ navigation, route: { params } }) => {
           </View>
         </View>
       ))}
-    </View>
-  )
-
-  const renderRating = (
-    <View>
-
     </View>
   )
 
@@ -392,9 +448,8 @@ const OrderDetail = ({ navigation, route: { params } }) => {
                     </TouchableNativeFeedback>
                   </View>
                 </View>
-                : (order.status?.id === 3 || order.status?.id === 4 || order.status?.id === 5) ?
+                : (order.status?.id === 3 || order.status?.id === 4 || order.status?.id === 5 || order.status?.id === 7) ?
                 <View>
-                  {order.status?.id === 5 && renderRating}
                   {renderOrderProgress}
                 </View>
                 : null
@@ -438,7 +493,7 @@ const OrderDetail = ({ navigation, route: { params } }) => {
             marginBottom={16}/>
         </View>
         <View style={styles.greyBar} />
-        { (order.status?.id === 2 || order.status?.id === 3 || order.status?.id === 4) &&
+        { (order.status?.id === 2 || order.status?.id === 3 || order.status?.id === 4 || order.status?.id === 7) &&
           <TouchableNativeFeedback onPress={onPressChat}>
             <View style={styles.buttonChatContainer}>
               <Icon name="message-text" size={24} color={'white'} />
@@ -448,28 +503,52 @@ const OrderDetail = ({ navigation, route: { params } }) => {
         }
         <View style={{marginBottom: 16}}/>
       </Container.Scroll>
-      {
-        order.status?.id === 4 ? (
+      { (order.status?.id === 4 || order.status?.id === 5) && 
           <View style={styles.buttonContainer}>
-            <Button 
-              title='Selesai'
-              color={'#008000'}
-              onPress={onCompleteOrder}/>
+          { order.status?.id === 4 ? (
+              <>
+                <Container.row justifyContent={'space-between'}>
+                  <View style={{flex: .47}}>
+                    <Button 
+                      title='Selesai'
+                      color={'#008000'}
+                      onPress={onCompleteOrder}/>
+                  </View>
+                  <View style={{flex: .47}}>
+                    <Button 
+                      title='Ajukan Komplain'
+                      color={color.red}
+                      onPress={toggleComplaintModal}/>
+                  </View>
+                </Container.row>
+              </>
+            ) : order.status?.id === 5 ? (
+              <>
+                <Button 
+                  title={`${order?.rate ? 'Lihat' : 'Beri'} ulasan`}
+                  color={'#008000'}
+                  onPress={onRatingButtonPress}/>
+              </> 
+            ) : null
+          }
           </View>
-        ) : order.status?.id === 5 ? (
-          <View style={styles.buttonContainer}>
-            <Button 
-              title={`${order?.rate ? 'Lihat' : 'Beri'} ulasan`}
-              color={'#008000'}
-              onPress={onRatingButtonPress}/>
-          </View> 
-        ) : null
       }
       <Modal.OrderDetail 
         isVisible={isOrderDetailModalOpen}
         toggleModal={toggleOrderDetailModal}
         renderContent={ order.type?.id === 1 ?
           renderArchitectOrder : renderInteriorOrder}/>
+      <Modal.Complaint 
+        isVisible={isComplaintModalVisible}
+        toggleModal={toggleComplaintModal}
+        onSubmit={onComplaintSubmit}/>
+      <Modal.ComplaintDetail
+        isVisible={isComplaintModalDetailOpen}
+        toggleModal={() => setComplaintDetailModalOpen(!isComplaintModalDetailOpen)}
+        content={selectedComplaint} 
+      />
+      <Modal.Loading1 
+        isVisible={isSubmit}/>
     </View>
   )
 }

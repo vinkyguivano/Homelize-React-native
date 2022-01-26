@@ -10,6 +10,7 @@ import PrimaryIndicator from '../../../components/ActivityIndicator'
 import * as Card from '../../../components/Card'
 import Loading from '../../../components/Loading'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import { useFocusEffect } from '@react-navigation/native'
 
 const Order = ({ navigation }) => {
   const { user : { user, token } } = useContext(AuthContext)
@@ -24,6 +25,12 @@ const Order = ({ navigation }) => {
   useEffect(() => {
     fetchOrderList(true)
   }, [])
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchOrderList(true)
+    }, [])
+  )
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -55,7 +62,7 @@ const Order = ({ navigation }) => {
       const queryParams = {
         page: newPage,
         pid: user.id,
-        sid: '1,2,3,4'
+        sid: '1,2,3,4,7'
       }
 
       const { data } = await api.get('orders', token, queryParams)

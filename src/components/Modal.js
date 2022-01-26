@@ -989,6 +989,7 @@ export const Secondary = ({isVisible, toggleModal, label, optionList, selectedOp
             </TouchableOpacity>
           </View>
           <FlatList
+            showsVerticalScrollIndicator={false}
             data={optionList}
             keyExtractor={(item, index) => index.toString()}
             renderItem={onRenderItem}
@@ -1100,7 +1101,8 @@ export const OrderDetail = ({ isVisible, toggleModal, renderContent}) => {
 const styleOrderDetail = StyleSheet.create({
   container: {
     backgroundColor: 'white',
-    height: height * (600 / height)
+    height: height * (600 / height),
+    borderRadius: 8
   }
 })
 
@@ -1247,6 +1249,268 @@ export const FinishOrder = ({ isVisible, toggleModal, onSubmit}) => {
               }}/>
           </View>
         </View>
+    </Modal>
+  )
+}
+
+export const Complaint = ({ isVisible, toggleModal, onSubmit}) => {
+  const [title, setTitle] = useState(null)
+  const [description, setDescription] = useState(null)
+  const [photo, setPhoto] = useState(null)
+  let titleRef, descRef
+
+  const handleClose = () => {
+    setTitle(null)
+    setDescription(null)
+    setPhoto(null)
+    toggleModal()
+  }
+
+  const handleChoosePhoto = () => {
+    launchImageLibrary({
+      quality: 1,
+      mediaType: 'photo'
+    }, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker')
+      } else if (response.errorCode) {
+        console.log('Error ' + response.errorCode)
+      } else {
+        setPhoto(response.assets[0])
+      }
+    })
+  }
+
+  const addPhoto = async () => {
+    setTitle(null)
+    setDescription(null)
+    setPhoto(null)
+    onSubmit(title, description, photo)
+  }
+
+  return (
+    <Modal
+      isVisible={isVisible}
+      onBackButtonPress={handleClose}
+      onBackdropPress={() => {
+        if(titleRef?.isFocused() || descRef?.isFocused()){
+          Keyboard.dismiss()
+        }else{
+          handleClose()
+        }
+      }}
+      style={{ margin: 0, alignItems: 'center'}}>
+      <View style={complaintStyles.container}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent:'space-between' }}>
+          <MText.Main fontWeight={'bold'} fontSize={15}>Ajukan Komplain</MText.Main>
+          <TouchableOpacity onPress={handleClose}>
+            <Icon name='close' size={22} color={'black'}/>
+          </TouchableOpacity>
+        </View>
+        <TextInput
+          ref={(ref) => titleRef = ref}
+          placeholder='Masukkan judul komplain'
+          style={complaintStyles.textInputContainer}
+          onChangeText={setTitle}
+          value={title} />
+        <TextInput
+          multiline
+          ref={(ref) => descRef = ref}
+          placeholder='Masukkan deskripsi komplain'
+          style={complaintStyles.textInputContainer}
+          onChangeText={setDescription}
+          value={description} />
+        <TouchableNativeFeedback onPress={handleChoosePhoto}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 15 }}>
+            <Icon name='plus' size={23} color={'black'} />
+            <MText.Main fontSize={14}>{photo ? 'Ubah' : 'Upload'} bukti foto</MText.Main>
+          </View>
+        </TouchableNativeFeedback>
+        {
+          photo && (
+            <View style={{ alignItems: 'center', marginBottom: 20 }}>
+              <Image
+                source={{ uri: photo.uri }}
+                style={{
+                  width: 200,
+                  height: 200,
+                }} />
+            </View>
+          )
+        }
+        <View style={{alignItems: 'center'}}>
+          <Button.PrimaryButton
+            isDisabled={!photo || !description || !title ? true : false}
+            onPress={addPhoto}
+            marginTop={15}
+            width={120}
+            height={35}
+            title={"Submit"}
+            fontStyle={{
+              fontSize: 13
+            }} />
+        </View>
+      </View>
+    </Modal>
+  )
+}
+
+const complaintStyles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+    width: width * (350 / width),
+    padding: 15
+  },
+  textInputContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'darkgrey',
+    padding: 0,
+    fontSize: 14,
+    fontFamily: font.secondary,
+    marginTop: 15
+  }
+})
+
+export const ComplaintDetail = ({ isVisible, toggleModal, content}) => {
+  return (
+    <Modal
+      isVisible={isVisible}
+      onBackButtonPress={toggleModal}
+      onBackdropPress={toggleModal}
+      style={{margin: 30}}>
+        <View style={complaintDetailStyles.container}>
+          <ScrollView>
+            <TouchableOpacity onPress={toggleModal}>
+              <Icon name='close' size={23} color={'black'} style={{marginLeft: 'auto', marginBottom: 10}}/>
+            </TouchableOpacity>
+            <MText.Main textAlign={'center'}>{content.title}</MText.Main>
+            <MText.Main marginTop={10}>Deskripsi : {content.description}</MText.Main>
+            <Image 
+              source={{uri: content.request_image_path}}
+              style={complaintDetailStyles.image}/>
+            <View style={{backgroundColor: 'lightgrey', height: 1, marginVertical: 5}}/>
+            {
+              content.response && (
+                <View style={{marginTop: 20}}>
+                  <MText.Main>Jawaban: {content.response}</MText.Main>
+                  {
+                    content.response_image_path && (
+                      <Image 
+                        source={{ uri: content.response_image_path}}
+                        style={complaintDetailStyles.image}/>
+                    )
+                  }
+                </View>
+              )
+            }
+          </ScrollView>
+        </View>    
+    </Modal>
+  )
+}
+
+const complaintDetailStyles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 12
+  },
+  image: {
+    height: 180,
+    width: 240,
+    marginVertical: 8
+  }
+})
+
+export const RejectComplaint = ({ isVisible, toggleModal, onSubmit}) => {
+  const [description, setDescription] = useState(null)
+  const [photo, setPhoto] = useState(null)
+  let descRef
+
+  const handleClose = () => {
+    setDescription(null)
+    setPhoto(null)
+    toggleModal()
+  }
+
+  const handleChoosePhoto = () => {
+    launchImageLibrary({
+      quality: 1,
+      mediaType: 'photo'
+    }, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker')
+      } else if (response.errorCode) {
+        console.log('Error ' + response.errorCode)
+      } else {
+        setPhoto(response.assets[0])
+      }
+    })
+  }
+
+  const addPhoto = async () => {
+    setDescription(null)
+    setPhoto(null)
+    onSubmit(description, photo)
+  }
+
+  return (
+    <Modal
+      isVisible={isVisible}
+      onBackButtonPress={handleClose}
+      onBackdropPress={() => {
+        if(descRef?.isFocused()){
+          Keyboard.dismiss()
+        }else{
+          handleClose()
+        }
+      }}
+      style={{ margin: 0, alignItems: 'center'}}>
+      <View style={complaintStyles.container}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent:'space-between' }}>
+          <MText.Main fontWeight={'bold'} fontSize={15}>Tolak Komplain</MText.Main>
+          <TouchableOpacity onPress={handleClose}>
+            <Icon name='close' size={22} color={'black'}/>
+          </TouchableOpacity>
+        </View>
+        <TextInput
+          multiline
+          ref={(ref) => descRef = ref}
+          placeholder='Masukkan alasan penolakan'
+          style={complaintStyles.textInputContainer}
+          onChangeText={setDescription}
+          value={description} />
+        <TouchableNativeFeedback onPress={handleChoosePhoto}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 15 }}>
+            <Icon name='plus' size={23} color={'black'} />
+            <MText.Main fontSize={14}>{photo ? 'Ubah' : 'Upload'} gambar pendukung (tidak wajib)</MText.Main>
+          </View>
+        </TouchableNativeFeedback>
+        {
+          photo && (
+            <View style={{ alignItems: 'center', marginBottom: 20 }}>
+              <Image
+                source={{ uri: photo.uri }}
+                style={{
+                  width: 200,
+                  height: 200,
+                }} />
+            </View>
+          )
+        }
+        <View style={{alignItems: 'center'}}>
+          <Button.PrimaryButton
+            isDisabled={!description ? true : false}
+            onPress={addPhoto}
+            marginTop={15}
+            width={120}
+            height={35}
+            title={"Submit"}
+            fontStyle={{
+              fontSize: 13
+            }} />
+        </View>
+      </View>
     </Modal>
   )
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { Button, Dimensions, Image, RefreshControl, ScrollView, StyleSheet, TouchableNativeFeedback, Alert, View, BackHandler, TouchableWithoutFeedback, Platform, PermissionsAndroid } from 'react-native'
+import { Button, Dimensions, Image, RefreshControl, ScrollView, StyleSheet, TouchableNativeFeedback, Alert, View, BackHandler, TouchableWithoutFeedback, Platform, PermissionsAndroid, Linking } from 'react-native'
 import * as Container from '../../../components/Container'
 import { Main as Text } from '../../../components/Text'
 import AuthContext from '../../../context/AuthContext'
@@ -24,7 +24,11 @@ const OrderDetail = ({ navigation, route: { params } }) => {
   const [isUpdateProgressModalOpen, setUpdateProgressModalOpen] = useState(false)
   const [isOrderDetailModalOpen, setOrderDetailModalOpen] = useState(false)
   const [isFinishOrderModalOpen, setFinishOrderModalOpen] = useState(false)
-  const paymentImage = order.payment_images?.slice(-1)[0];
+  const [isComplaintModalDetailOpen, setComplaintDetailModalOpen] = useState(false)
+  const [isRejectComplaintModalOpen, setRejectComplaintModalOpen] = useState(false)
+  const [selectedComplaint, setSelectedComplaint] = useState('')
+  const paymentImage = order.payment_images?.[0];
+  const complaint = order.order_complaints?.[0];
   const downloadUrl = 'http://localhost:8000/download/'
 
   const backAction = () => {
@@ -230,6 +234,50 @@ const OrderDetail = ({ navigation, route: { params } }) => {
     handleUpdateOrder(params)    
   }
 
+  const openDetailComplaint = (complaintId) => {
+    const complaint = order.order_complaints.find((item) => item.id === complaintId)
+    if(complaint){
+      setComplaintDetailModalOpen(true)
+      setSelectedComplaint(complaint)
+    }
+  }
+
+  const onAcceptComplaint = () => {
+    handleUpdateOrder({ type: 3})
+  }
+
+  const toggleRejectComplaintModal = () => {
+    setRejectComplaintModalOpen(!isRejectComplaintModalOpen)
+  }
+
+  const onSubmitRejectComplaint = async (desc, photo) => {
+    try {
+      const data = new FormData()
+      data.append('complaint_id', complaint.id)
+      data.append('description', desc)
+      if(photo){
+        data.append('image', {
+          name: photo.fileName,
+          type: photo.type,
+          uri: photo.uri
+        })
+      }
+      setIsSubmit(true)
+      await api.post(`orders/${orderId}/update`, token, data, {type: 8}, {
+        'Content-Type' : 'multipart/formdata'
+      });
+      await fetchOrderData()
+      toggleRejectComplaintModal()
+      setIsSubmit(false)
+    } catch (error) {
+      showMessage({
+        message: 'Error ' + error,
+        type: 'danger'
+      })
+      setIsSubmit(false)
+    }
+  }
+
   const renderArchitectOrder = (
     <View>
       <View style={styles.rowItem}>
@@ -380,13 +428,29 @@ const OrderDetail = ({ navigation, route: { params } }) => {
                   <View>
                     <Text>Kamu dapat melihatnya dengan menekan tombol ini.{` `}  
                       <TouchableWithoutFeedback onPress={()=>checkPermission(item.link)}>
-                        <Icon name="download" size={20}/>
+                        <Icon name="download" size={25} color={'black'}/>
                       </TouchableWithoutFeedback>
+                    </Text>
+                  </View>
+                ) : item.url ? (
+                  <View>
+                    <Text>
+                      {item.description.split(' ').slice(0, -1).join(' ')}
+                      {` `}
+                      <Text onPress={() => Linking.openURL(item.url)} color={'blue'}>
+                        {item.url}
+                      </Text>
                     </Text>
                   </View>
                 ) : item.description ? (
                   <View>
                     <Text>{item.description}</Text>
+                  </View>
+                ) : item.complaint_id ? (
+                  <View>
+                    <Text onPress={() => openDetailComplaint(item.complaint_id)}>
+                      {'Lihat detail komplain >'}
+                    </Text>
                   </View>
                 ) : null
               }
@@ -425,11 +489,27 @@ const OrderDetail = ({ navigation, route: { params } }) => {
                     </TouchableNativeFeedback>
                   </View>
                 </View>
-                : (order.status?.id === 3 || order.status?.id === 4 || order.status?.id === 5) ?
+                : order.status?.id === 7 ?
                   <View>
-                    {renderOrderProgress}
+                    <Text fontWeight={'bold'}>Segera cek komplain yang diajukan oleh klien anda!</Text>
+                    <View style={styles.complaintContainer}>
+                      <Text textAlign={'center'}>{complaint?.title}</Text>
+                      <TouchableNativeFeedback onPress={() => onPressImage(complaint?.request_image_path)}>
+                        <Image 
+                          source={{ uri: complaint?.request_image_path}}
+                          style={styles.complaintImage}/>
+                      </TouchableNativeFeedback>
+                      <Text textAlign={'center'}>{complaint?.description}</Text>
+                    </View>
                   </View>
                   : null
+            }
+            {
+              (order.status?.id === 3 || order.status?.id === 4 || order.status?.id === 5 || order.status?.id === 7) ?
+              <View>
+                {renderOrderProgress}
+              </View>
+              : null
             }
           </View>
         </View>
@@ -470,7 +550,7 @@ const OrderDetail = ({ navigation, route: { params } }) => {
             marginBottom={16} />
         </View>
         <View style={styles.greyBar} />
-        {(order.status?.id === 2 || order.status?.id === 3 || order.status?.id === 4) &&
+        {(order.status?.id === 2 || order.status?.id === 3 || order.status?.id === 4 || order.status?.id === 7) &&
           <TouchableNativeFeedback onPress={onPressChat}>
             <View style={styles.buttonChatContainer}>
               <Icon name="message-text" size={24} color={'white'} />
@@ -480,7 +560,7 @@ const OrderDetail = ({ navigation, route: { params } }) => {
         }
         <View style={{marginBottom: 16}}/>
       </Container.Scroll>
-      {(order.status?.id === 2 || order.status?.id === 3) &&
+      {(order.status?.id === 2 || order.status?.id === 3 || order.status?.id === 7) &&
         <View style={styles.buttonContainer}>
           <Container.row justifyContent={'space-between'}>
             {
@@ -515,7 +595,22 @@ const OrderDetail = ({ navigation, route: { params } }) => {
                         onPress={toggleFinishOrderModal} />
                   </View>
                   </>
-                  : null
+                  : order.status?.id === 7 ?
+                    <>
+                      <View style={{ flex: .5 }}>
+                        <Button
+                          title='ACCEPT'
+                          color={'#008000'}
+                          onPress={onAcceptComplaint} />
+                      </View>
+                      <View style={{ flex: .45 }}>
+                        <Button
+                          title='REJECT'
+                          color={color.red}
+                          onPress={toggleRejectComplaintModal} />
+                      </View>
+                    </>
+                    : null
             }
           </Container.row>
         </View>
@@ -533,6 +628,16 @@ const OrderDetail = ({ navigation, route: { params } }) => {
          isVisible={isFinishOrderModalOpen}
          toggleModal={toggleFinishOrderModal}
          onSubmit={onFinishOrder}
+      />
+      <Modal.ComplaintDetail
+        isVisible={isComplaintModalDetailOpen}
+        toggleModal={() => setComplaintDetailModalOpen(!isComplaintModalDetailOpen)}
+        content={selectedComplaint} 
+      />
+      <Modal.RejectComplaint
+        isVisible={isRejectComplaintModalOpen}
+        toggleModal={toggleRejectComplaintModal} 
+        onSubmit={onSubmitRejectComplaint}
       />
       <Modal.Loading1 isVisible={isSubmit} />
     </View>
@@ -598,4 +703,14 @@ const styles = StyleSheet.create({
   progressContainer: {
     flexDirection: 'row'
   },
+  complaintContainer: {
+    marginTop: 10,
+    marginBottom: 16
+  },
+  complaintImage: {
+    width: width * (180 / width),
+    aspectRatio: 1.2,
+    alignSelf: 'center',
+    marginVertical: 8
+  }
 })

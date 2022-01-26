@@ -90,7 +90,7 @@ export const Design = memo(({ item, index, navigation, type, onUnlikedImage }) =
             </TouchableNativeFeedback>
           )}
         </View>
-        <View style={{ margin: 10 }}>
+        {/* <View style={{ margin: 10 }}>
           <TextM.Title>{item.project_name}</TextM.Title>
           <View style={styles.containerDesigProfName}>
             <Avatar rounded source={imageSource} containerStyle={styles.avatarContainer} />
@@ -99,7 +99,7 @@ export const Design = memo(({ item, index, navigation, type, onUnlikedImage }) =
               {item.professional_name}
             </TextM.Title>
           </View>
-        </View>
+        </View> */}
       </View>     
     </TouchableNativeFeedback>
   )
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   },
   designItemContainer: {
     width: '48%',
-    marginBottom: 20,
+    marginBottom: 26,
     elevation: 8,
     borderRadius: 5,
     overflow: 'hidden',
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   },
   designImage: {
     width: '100%',
-    aspectRatio: 1.5
+    aspectRatio: 1.3
   },
   containerDesigProfName: {
     flexDirection: 'row',

@@ -67,7 +67,8 @@ const orderStatus = [
   { id: 3, name: 'Proses Pengerjaan'},
   { id: 4, name: 'Menunggu Konfirmasi Selesai'},
   { id: 5, name: 'Selesai'},
-  { id: 6, name: 'Batal'}
+  { id: 6, name: 'Batal'},
+  { id: 7, name: 'Pengajuan Komplain'},
 ]
 
 export {

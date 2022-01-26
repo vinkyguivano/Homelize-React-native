@@ -10,7 +10,7 @@ export function Design() {
       <SkeletonPlaceholder>
         <View style={styles.image} />
       </SkeletonPlaceholder>
-      <View style={styles.containerDesigProfName}>
+      {/* <View style={styles.containerDesigProfName}>
         <SkeletonPlaceholder>
           <View style={{ marginBottom: 12, width: width * 0.243, height: height * 0.029 }} />
           <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -18,7 +18,7 @@ export function Design() {
             <View style={{ marginLeft: 8, width: width * 0.243, height: height * 0.029 }} />
           </View>
         </SkeletonPlaceholder>
-      </View>
+      </View> */}
     </View>
   )
 }
@@ -27,13 +27,13 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     width: '48%',
-    marginBottom: 18,
+    marginBottom: 26,
     borderRadius: 5,
     elevation: 8
   },
   image: {
     width: '100%',
-    aspectRatio: 1.5
+    aspectRatio: 1.3
   },
   containerDesigProfName: {
     margin: 12,

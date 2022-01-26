@@ -1,7 +1,6 @@
 import React, { useEffect, useContext, useState, useRef } from 'react'
 import { StyleSheet, FlatList, View } from 'react-native'
 import * as Container from '../../components/Container'
-import { Main as Text} from '../../components/Text'
 import AuthContext from '../../context/AuthContext'
 import PrimaryIndicator from '../../components/ActivityIndicator'
 import Loading from '../../components/Loading'
@@ -10,6 +9,7 @@ import { showMessage } from 'react-native-flash-message'
 import { api } from '../../utils'
 import * as Card from '../../components/Card'
 import * as NotFound from '../../components/NotFound'
+import { useFocusEffect } from '@react-navigation/native'
 
 const ChatList = ({ navigation }) => {
   const { user } = useContext(AuthContext)
@@ -30,6 +30,12 @@ const ChatList = ({ navigation }) => {
       setError('')
     }
   }, [error])
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchUserList(true)
+    }, [])
+  )
 
   useEffect(() => {
     fetchUserList(true)
