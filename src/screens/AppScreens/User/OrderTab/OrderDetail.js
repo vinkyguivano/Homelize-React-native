@@ -26,7 +26,7 @@ const OrderDetail = ({ navigation, route: { params } }) => {
   const [isComplaintModalVisible, setComplaintModalVisible] = useState(false)
   const [selectedComplaint, setSelectedComplaint] = useState('')
   const [isComplaintModalDetailOpen, setComplaintDetailModalOpen] = useState(false)
-  const downloadUrl = 'http://localhost:8000/download/'
+  const downloadUrl = 'https://warm-garden-46483.herokuapp.com/download/'
 
   const backAction = () => {
     navigation.goBack(),

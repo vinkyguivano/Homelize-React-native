@@ -2,7 +2,7 @@ import axios from "axios";
 
 const api = {
   get: (url, token = "", params = {}) => {
-    return axios.get(`http://127.0.0.1:8000/api/${url}`, {
+    return axios.get(`https://warm-garden-46483.herokuapp.com/api/${url}`, {
       params: {
         ...params
       },
@@ -15,7 +15,7 @@ const api = {
   },
 
   post:  (url, token = "", body , params = {}, headers = {}) => {
-    return axios.post(`http://127.0.0.1:8000/api/${url}`, body, {
+    return axios.post(`https://warm-garden-46483.herokuapp.com/api/${url}`, body, {
       params: {
         ...params
       },
@@ -29,7 +29,7 @@ const api = {
   },
 
   put: (url, token = "", body , params = {}, headers = {}) => {
-    return axios.put(`http://127.0.0.1:8000/api/${url}`, body, {
+    return axios.put(`https://warm-garden-46483.herokuapp.com/api/${url}`, body, {
       params: {
         ...params
       },
@@ -43,7 +43,7 @@ const api = {
   },
 
   delete:  (url, token = "", params = {}) => {
-    return axios.delete(`http://127.0.0.1:8000/api/${url}`, {
+    return axios.delete(`https://warm-garden-46483.herokuapp.com/api/${url}`, {
       params: {
         ...params
       },
