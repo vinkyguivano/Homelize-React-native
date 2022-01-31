@@ -29,7 +29,7 @@ const OrderDetail = ({ navigation, route: { params } }) => {
   const [selectedComplaint, setSelectedComplaint] = useState('')
   const paymentImage = order.payment_images?.[0];
   const complaint = order.order_complaints?.[0];
-  const downloadUrl = 'https://warm-garden-46483.herokuapp.com/download/'
+  const downloadUrl = 'http://prod.eba-dcjmmfsy.ap-southeast-1.elasticbeanstalk.com/download/'
 
   const backAction = () => {
     navigation.goBack(),

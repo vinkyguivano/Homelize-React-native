@@ -26,7 +26,7 @@ const OrderDetail = ({ navigation, route: { params } }) => {
   const [isComplaintModalVisible, setComplaintModalVisible] = useState(false)
   const [selectedComplaint, setSelectedComplaint] = useState('')
   const [isComplaintModalDetailOpen, setComplaintDetailModalOpen] = useState(false)
-  const downloadUrl = 'https://warm-garden-46483.herokuapp.com/download/'
+  const downloadUrl = 'http://prod.eba-dcjmmfsy.ap-southeast-1.elasticbeanstalk.com/download/'
 
   const backAction = () => {
     navigation.goBack(),
