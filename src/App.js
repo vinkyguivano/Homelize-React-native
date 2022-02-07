@@ -6,6 +6,7 @@ import AuthContext from './context/AuthContext';
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import FlashMessage from 'react-native-flash-message';
 import { Host } from 'react-native-portalize' 
+import { LogBox } from 'react-native';
 
 const App = () => {
   const [state, dispatch] = React.useReducer(
@@ -81,6 +82,7 @@ const App = () => {
             <Router state={state} />
           </Host>
         </NavigationContainer>
+        {LogBox.ignoreAllLogs()}
         <FlashMessage position={"top"}/>
       </AuthContext.Provider>
     </SafeAreaProvider>
