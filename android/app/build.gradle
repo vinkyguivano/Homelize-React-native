@@ -152,6 +152,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('homelize-release.keystore')
+            storePassword 'Gu!vano130'
+            keyAlias 'homelizeReleaseKeystore'
+            keyPassword 'Gu!vano130'
+        }
     }
     buildTypes {
         debug {
