@@ -632,7 +632,9 @@ const OrderDetail = ({ navigation, route: { params } }) => {
       <Modal.ComplaintDetail
         isVisible={isComplaintModalDetailOpen}
         toggleModal={() => setComplaintDetailModalOpen(!isComplaintModalDetailOpen)}
-        content={selectedComplaint} 
+        content={selectedComplaint}
+        navigation={navigation}
+        profName={order.professional?.name}
       />
       <Modal.RejectComplaint
         isVisible={isRejectComplaintModalOpen}

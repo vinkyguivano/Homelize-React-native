@@ -1358,7 +1358,7 @@ export const Complaint = ({ isVisible, toggleModal, onSubmit}) => {
 const complaintStyles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
-    width: width * (350 / width),
+    width: width * 0.8516,
     padding: 15
   },
   textInputContainer: {
@@ -1371,7 +1371,16 @@ const complaintStyles = StyleSheet.create({
   }
 })
 
-export const ComplaintDetail = ({ isVisible, toggleModal, content}) => {
+export const ComplaintDetail = ({ isVisible, toggleModal, content, navigation, profName }) => {
+  
+  const handleOpenImageDetail = (uri) => {
+    toggleModal()
+    navigation.navigate("Photo", {
+      from: "Order Detail",
+      data: { uri }
+    })
+  }
+  
   return (
     <Modal
       isVisible={isVisible}
@@ -1385,19 +1394,26 @@ export const ComplaintDetail = ({ isVisible, toggleModal, content}) => {
             </TouchableOpacity>
             <MText.Main textAlign={'center'}>{content.title}</MText.Main>
             <MText.Main marginTop={10}>Deskripsi : {content.description}</MText.Main>
-            <Image 
-              source={{uri: content.request_image_path}}
-              style={complaintDetailStyles.image}/>
+            <TouchableOpacity
+              onPress={() => handleOpenImageDetail(content.request_image_path)}>  
+              <Image 
+                source={{uri: content.request_image_path}}
+                style={complaintDetailStyles.image}/>
+            </TouchableOpacity>
             <View style={{backgroundColor: 'lightgrey', height: 1, marginVertical: 5}}/>
             {
               content.response && (
                 <View style={{marginTop: 20}}>
+                  <MText.Main textAlign={'center'} fontWeight={'bold'} marginBottom={10}>{profName}</MText.Main>
                   <MText.Main>Jawaban: {content.response}</MText.Main>
                   {
                     content.response_image_path && (
-                      <Image 
-                        source={{ uri: content.response_image_path}}
-                        style={complaintDetailStyles.image}/>
+                      <TouchableOpacity
+                        onPress={handleOpenImageDetail(content.response_image_path)}>
+                        <Image 
+                          source={{ uri: content.response_image_path}}
+                          style={complaintDetailStyles.image}/>
+                      </TouchableOpacity>
                     )
                   }
                 </View>
@@ -1418,7 +1434,8 @@ const complaintDetailStyles = StyleSheet.create({
   image: {
     height: 180,
     width: 240,
-    marginVertical: 8
+    marginVertical: 8,
+    alignSelf: 'center'
   }
 })
 
